@@ -1,6 +1,15 @@
 <?php
-// Début de la session (si nécessaire)
 session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['email'])) {
+    // Rediriger vers la page de connexion si non connecté
+    header("Location: login.php");
+    exit();
+}
+?>
+<?php
+
 
 // Utilisateurs
 $utilisateurs = [
@@ -12,7 +21,13 @@ $utilisateurs = [
         "nom" => "Admin",
         "prenom" => "Test",
         "mot_de_passe" => "12345",
-        "preference" => 1
+        "preference" => 1,
+        "preferencelist" => [
+            "Musique",
+            "professionnels",
+            "Atelier"
+        ],
+         "photo de profile"=>"https://publish-p47754-e237306.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--914bcfe0-f610-4610-a77e-6ea53c53f630/_330603286208.app.webp?preferwebp=true&width=312"
     ],
     [
         "id" => 2,
@@ -22,7 +37,13 @@ $utilisateurs = [
         "nom" => "User",
         "prenom" => "One",
         "mot_de_passe" => "password1",
-        "preference" => 1
+        "preference" => 1,
+        "preferencelist" => [
+            "Musique",
+            "professionnels",
+            "Atelier"
+        ],
+         "photo de profile"=>"https://publish-p47754-e237306.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--914bcfe0-f610-4610-a77e-6ea53c53f630/_330603286208.app.webp?preferwebp=true&width=312"
     ],
     [
         "id" => 3,
@@ -32,7 +53,13 @@ $utilisateurs = [
         "nom" => "User",
         "prenom" => "Two",
         "mot_de_passe" => "password2",
-        "preference" => 0
+        "preference" => 0,
+        "preferencelist"  => [
+            "Musique",
+            "professionnels",
+            "Atelier"
+        ],
+         "photo de profile"=>"https://publish-p47754-e237306.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--914bcfe0-f610-4610-a77e-6ea53c53f630/_330603286208.app.webp?preferwebp=true&width=312"
     ]
 ];
 
@@ -271,22 +298,34 @@ $evenements = [
     ]
 ];
 
+
 // Récupération des données soumises par le formulaire
 $search_term = isset($_POST['search']) ? $_POST['search'] : '';
 $categorie_filter = isset($_POST['categorie']) ? $_POST['categorie'] : '';
 $ville_filter = isset($_POST['ville']) ? $_POST['ville'] : '';
 
-// Filtrer les événements en fonction de la recherche
+// Filtrer les événements en fonction de la recherche et des préférences
 $resultats = array_filter($evenements, function($event) use ($search_term, $categorie_filter, $ville_filter) {
+    // Charger les préférences de l'utilisateur depuis la session
+    $preferences = isset($_SESSION['preferencelist']) ? $_SESSION['preferencelist'] : [];
+
+    // Filtrage des noms ou lieux
     $match_nom = empty($search_term) || stripos($event['nom'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
-    $match_categorie = empty($categorie_filter) || $event['categorie'] == $categorie_filter;
+
+    // Filtrage par catégorie : priorité au filtre du formulaire, sinon préférences
+    $match_categorie = empty($categorie_filter)
+        ? (empty($preferences) || in_array($event['categorie'], $preferences))
+        : $event['categorie'] == $categorie_filter;
+
+    // Filtrage par ville
     $match_ville = empty($ville_filter) || $event['ville'] == $ville_filter;
 
+    // L'événement est valide uniquement si toutes les conditions sont respectées
     return $match_nom && $match_categorie && $match_ville;
 });
-?><?php
+
 // Nombre d'événements par page
-$events_per_page = 8; // Afficher 3 événements par page
+$events_per_page = 8; // Afficher 8 événements par page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $events_per_page;
 
@@ -297,12 +336,14 @@ $evenements_pagination = array_slice($resultats, $offset, $events_per_page);
 $total_pages = ceil(count($resultats) / $events_per_page);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recherche d'événements</title>
+
     <style>
 body {   margin: 0;
     padding: 0;
@@ -356,6 +397,9 @@ body {   margin: 0;
         .photo-container img.active {
             left: 0;
         }
+        #deconnect{
+            color:red;
+        }
       
         .event {
     background: rgba(255, 255, 255, 0.3);
@@ -405,7 +449,6 @@ body {   margin: 0;
             }
         }
         .pagination {
-            text-align: center;
             margin-top: 20px;
         }
         .pagination a {
@@ -421,20 +464,21 @@ body {   margin: 0;
             color: #ccc;
             font-size: 18px;
         }
-        header {
+        /* En-tête principal */
+header {
     background: rgba(0, 0, 0, 0.8);
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000;
     padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    display: flex; /* Active Flexbox */
+    align-items: center; /* Aligne les éléments verticalement au centre */
+    justify-content: space-between; /* Sépare les éléments : un à gauche, un à droite */
 }
 
+/* Navigation (menus) */
 header nav ul {
     list-style: none;
     display: flex;
@@ -444,6 +488,13 @@ header nav ul {
 
 header nav ul li {
     margin: 0 15px;
+}
+header nav ul li img {
+    width: 70; /* Largeur souhaitée */
+    height: 70px; /* Hauteur souhaitée (identique à la largeur pour un cercle parfait) */
+    border-radius: 50%; /* Rend l'image circulaire */
+    object-fit: cover; /* Maintient la qualité de l'image en la recadrant au besoin */
+    overflow: hidden; /* Empêche tout débordement */
 }
 
 header nav ul li a {
@@ -458,19 +509,22 @@ header nav ul li a:hover {
     text-shadow: 0 0 10px #ff007c;
 }
 
-header .nav-2 {
-   
-    position: absolute;
-    right: 40px; 
-    top: 50%;
-    transform: translateY(-50%);
-}
-/* Style pour la barre de recherche */
+/* Alignement de la barre de recherche */
 .search-bar {
- 
+    display: flex;
+    align-items: center; /* Aligne les champs de recherche verticalement au centre */
+    margin-left: auto; /* Pousse la barre de recherche à l'extrême droite */
 }
+.profiledeco {
+            display: none; /* Caché par défaut */
+            position: absolute; /* Permet de positionner avec précision via top et left */
+        }
+        .profiledeco li {
+            list-style: none; /* Supprime les puces des listes */
+            margin: 5px 0; /* Espacement vertical entre les éléments */
+        }
 
-/* Style pour les champs de recherche */
+/* Champs de recherche */
 .search-bar input[type="text"],
 .search-bar select {
     padding: 10px;
@@ -481,6 +535,32 @@ header .nav-2 {
     color: #333;
     transition: all 0.3s ease-in-out;
 }
+
+.search-bar input[type="text"]:focus,
+.search-bar select:focus {
+    background: rgba(255, 255, 255, 1);
+    outline: none;
+}
+
+/* Bouton de recherche */
+.search-bar button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #00f6ff;
+    color: white;
+    font-weight: bold;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.search-bar button:hover {
+    background-color: #ff007c;
+    color: white;
+}
+
 
 .vide {
     height: 100px;
@@ -505,23 +585,107 @@ header .nav-2 {
     transform: translateY(-3px);
 }
 
+/* Bouton du profil */
+.profile-trigger {
+        
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .profile-trigger:hover {
+            background-color: #ff6b81; /* Couleur plus claire au survol */
+            transform: translateY(-2px); /* Léger effet de mouvement */
+        }
+
+        /* Menu Profil */
+        .profiledeco {
+            display: none;
+            position: absolute;
+            top: 120px; /* Position sous le bouton */
+            left: 0;
+            background-color: #2f3542;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            min-width: 200px;
+            z-index: 1000;
+        }
+
+        .profiledeco ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .profiledeco li {
+            margin: 10px 0;
+        }
+
+        .profiledeco a {
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profiledeco a:hover {
+            background-color: #57606f;
+        }
+
+        /* Animation du menu */
+        .profiledeco.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+
+
+
 
     </style>
 </head>
 <body>
-
     
 <header id="header">
         <nav>
 
             <ul class="nav-2">
-            <li><a href="http://localhost/tpweb/pageacceil.php#hero" >Accueil</a></li>
-                <li>  <a href="http://localhost/tpweb/login.php">login</a></li>
-                <li> <a href="http://localhost/tpweb/signup.php" >sign-up</a></li>
+            <li> <button class="profile-trigger" onclick="toggleMenu()"><img src="<?php echo $_SESSION['photodeprofile']?>" alt="pp" ></button></li>
+            <li><a href="http://localhost/tpweb/bienvenue.php" >Accueil</a></li>
+                <li>  <a href="">mes evenement</a></li>
+                <li>  <a href="">mes organisation</a></li>
+             
+             
             </ul>
         
         </nav>
         <div class="container">
+
+       
     <div class="search-bar">
         <form method="POST" action="">
             <input type="text" name="search" placeholder="Rechercher par nom ou lieu" value="<?php echo $search_term; ?>" />
@@ -544,11 +708,23 @@ header .nav-2 {
             <button type="submit">Rechercher</button>
         </form>
     </div>
+    
+    <div class="profiledeco" id="profiledeco">
+            <ul>
+                <li><a href="deconnexion.php">Déconnexion</a></li>
+                <li><a href="#">Voir mon profil</a></li>
+            </ul>
+        </div>
 
     </header>
+
+
+   
     <div class="vide"></div>
 
-
+    <h1 id=foryou>Events for you :</h1>    
+    
+   
         <div class="events-grid">
         <?php foreach ($evenements_pagination as $event): ?>
             <div class="event">
@@ -564,9 +740,7 @@ header .nav-2 {
             <p><strong>Date:</strong> <?php echo $event['date_debut']; ?> - <?php echo $event['date_fin']; ?></p>
             <p><strong>Heure: </strong><?php echo $event['heure_debut']; ?> - <?php echo $event['heure_fin']; ?></p>
             <p><strong>Participants:</strong> <?php echo $event['nbr_participants_actuels']; ?> participants</p>
-            <button onclick="window.location.href='http://localhost/tpweb/login.php'">Participer</button>
-
-
+            <button>Participer</button>
             </div>
             <?php endforeach; ?>
         </div>
@@ -587,7 +761,7 @@ header .nav-2 {
         <?php endif; ?>
     </div>
 </div>
-
+</section>
 <script>
     document.querySelectorAll('.photo-container').forEach(function(container) {
         let images = container.querySelectorAll('img');
@@ -599,7 +773,37 @@ header .nav-2 {
             images[currentIndex].classList.add('active');
         }, 3000);  // Changer d'image toutes les 3 secondes
     });
+   function afficherinfoprofil(x, y) {
+            // Récupérer l'élément
+            const profiledeco = document.getElementById("profiledeco");
+            
+            // Changer sa position
+            profiledeco.style.top = y + "px"; // Position en Y
+            profiledeco.style.left = x + "px"; // Position en X
+            
+            // Afficher l'élément
+            profiledeco.style.display = "block";
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("profiledeco");
+            menu.classList.toggle("show");
+        }
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener("click", (event) => {
+            const menu = document.getElementById("profiledeco");
+            const trigger = document.querySelector(".profile-trigger");
+
+            if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+                menu.classList.remove("show");
+            }
+        });
+
 </script>
+
+
+
 
 </body>
 </html>

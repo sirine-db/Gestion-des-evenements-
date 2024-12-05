@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-// Vérifier si l'utilisateur est déjà authentifié
-if (isset($_SESSION['user'])) {
-    // Rediriger vers la page de bienvenue
+// Vérifier si l'utilisateur est connecté
+if (isset($_SESSION['email'])) {
+    // Rediriger vers la page de connexion si non connecté
     header("Location: bienvenue.php");
     exit();
 }
@@ -158,13 +158,14 @@ if (isset($_SESSION['user'])) {
     </style>
 </head>
 <body>
+
 <header id="header">
         <nav>
             <ul class="nav-1">
-                <li><a href="http://localhost/tpweb/pageacceil.html#hero" >Accueil</a></li>
+                <li><a href="http://localhost/tpweb/pageacceil.php#hero" >Accueil</a></li>
                 <li><a href="http://localhost/tpweb/event.php">evenements</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.html#about" >Àpropos</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.html#contact">Contact</a></li>
+                <li><a href="http://localhost/tpweb/pageacceil.php#about" >Àpropos</a></li>
+                <li><a href="http://localhost/tpweb/pageacceil.php#contact">Contact</a></li>
             </ul>
             <ul class="nav-2">
 

@@ -7,48 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         foreach ($events as $event) {
        switch ($event) {
-                case "professionnels":
-                    echo "Vous avez sélectionné un événement professionnel.<br>";
-                    break;
-                case "culturels":
-                    echo "Vous avez sélectionné un événement culturel.<br>";
-                    break;
-                case "sociaux":
-                    echo "Vous avez sélectionné un événement social.<br>";
-                    break;
-                case "sportifs":
-                    echo "Vous avez sélectionné un événement sportif.<br>";
-                    break;
-                case "éducatifs":
-                    echo "Vous avez sélectionné un événement éducatif.<br>";
-                    break;
-                case "caritatifs":
-                    echo "Vous avez sélectionné un événement caritatif.<br>";
-                    break;
-                case "religieux":
-                    echo "Vous avez sélectionné un événement religieux.<br>";
-                    break;
-                case "loisirs":
-                    echo "Vous avez sélectionné un événement récréatif.<br>";
-                    break;
-                case "technologiques":
-                    echo "Vous avez sélectionné un événement technologique.<br>";
-                    break;
-                case "virtuels":
-                    echo "Vous avez sélectionné un événement virtuel.<br>";
-                    break;
-                case "Séminaire":
-                        echo "Vous avez sélectionné un événement Séminaire.<br>";
-                    break;
-                case "Musique":
-                        echo "Vous avez sélectionné un événement Musique.<br>";
-                    break;
-                case "Atelier":
-                        echo "Vous avez sélectionné un événement Atelier.<br>";
-                break;
-               
-            
-                    
+        // on ajoute au user actuelle les pref et a la session aussi $_SESSION['preferencelist']=$utilisateur['preferencelist'];
                     
                     
             }
