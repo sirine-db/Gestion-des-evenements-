@@ -1,0 +1,151 @@
+
+/* Structure générale */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #f4f4f9;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #45828D;
+    color: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content:  flex-start;color: #ffffff;
+}
+
+.sidebar .logo {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0; 
+    margin: 0;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 30px;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.3s;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.sidebar nav ul li a:hover {
+    background: #057937;
+}
+
+.sidebar nav ul li i {
+    font-size: 1.40rem;
+
+}
+
+
+/*************************************************************/
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 20px;
+    margin-top: 0;
+}
+
+.main-content header {
+    background: #45828D;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sidebar .logo i {
+    font-size: 5rem;
+}
+
+
+#dashboard-content {
+    background-color: #45828D;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
+
+/******************************menu*******************************/
+
+
+.stats-row > div h3{
+    color: #fff;
+}
+
+* Conteneur pour les blocs statistiques */
+#Tableau-de-bord {
+    width: 100%; /* Occupe toute la largeur disponible */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Ligne contenant les 4 blocs */
+.stats-row {
+    display: flex;
+    gap: 20px; /* Espacement horizontal entre les blocs */
+    justify-content: center; /* Centre les blocs horizontalement */
+    flex-wrap: nowrap; /* Empêche le retour à la ligne */
+    max-width: 100%;
+}
+
+/* Blocs statistiques */
+.stats-row > div {
+    background-color: #2A6171;
+    color: #fff;
+    text-align: center;
+    width: 150px; /* Largeur des blocs */
+    height: 120px; /* Hauteur des blocs */
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Bloc des notifications */
+#notifications {
+    background-color: #ffffff;
+    color: hsl(226, 74%, 20%);
+    width: 100%; /* Largeur réduite pour un meilleur design */
+    max-width: 800px;
+    padding: 10px 20px; /* Réduit la hauteur en diminuant le padding vertical */
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin: 20px auto; /* Centré avec espace vertical réduit */
+    overflow: hidden; /* Empêche le contenu de dépasser si nécessaire */
+}
+
+#notifications{
+    color: #002e3c;
+}
+
