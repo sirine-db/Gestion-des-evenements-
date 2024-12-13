@@ -125,7 +125,10 @@ $conn->close();
                         <button type="submit" name="action" value="search" id="search">SEARCH</button>
                         <button type="submit" name="action" value="delete" id="delete">DELETE</button>
                         <button type="submit" name="action" value="archive" id="archive">ARCHIVE</button>
+                        
                         <button type="submit" name="action" value="mark_as_read" id="mark-as-read">MARK AS READ</button>
+                        <a href="archived_messages.php" id="view-archived">messages archivés</a>
+
                     </div>
                 </form>
 
