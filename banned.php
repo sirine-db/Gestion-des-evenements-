@@ -13,6 +13,7 @@ if ($conn->connect_error) {
 // Initialize variables
 $users = [];
 $user = null;
+$error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Unban a user
@@ -41,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $result->fetch_assoc();
 
         if (!$user) {
-            echo "<script>alert('User not found or not banned');</script>";
+            $error_message = 'User not found or not banned';
         }
     }
 } else {
@@ -111,7 +112,7 @@ $conn->close();
                         <button type="submit" id="unban">Unban</button>
                     </form>
                 <?php else: ?>
-                    <p>No user found or search result empty.</p>
+                    <p><?= $error_message ?: 'No user found or search result empty.' ?></p>
                 <?php endif; ?>
             </div>
 
@@ -158,4 +159,3 @@ $conn->close();
 <footer></footer>
 </body>
 </html>
-

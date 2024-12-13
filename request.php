@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$request) {
             echo "<script>alert('Event request not found');</script>";
+            echo "<script>window.location.href = 'request.php';</script>"; // Redirect to the same page
         }
     }
 } else {

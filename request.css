@@ -82,7 +82,7 @@ body {
 
 
 #dashboard-content {
-    background-color: #45828D;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -164,3 +164,52 @@ tbody tr:hover {
 }
 
 
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #45828D;
+    color: white;
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Light grey for odd rows */
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #ffffff; /* White for even rows */
+}
+
+table tbody tr:hover {
+    background-color: #f0f0f0; /* Light grey on hover */
+}
+
+table td a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 15px;
+    background-color: #0e7360;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+table td a:hover {
+    background-color: #057937;
+}
+
+table td {
+    font-size: 14px;
+    color: #333;
+}

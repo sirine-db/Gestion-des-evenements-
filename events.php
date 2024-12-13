@@ -39,27 +39,25 @@ function deleteEvent($eventId) {
 function updateEvent($eventId, $name, $participants, $location, $date, $duration, $organizer) {
     global $conn;
 
-    // Vérifier si l'ID de l'organisateur existe
-    $sql = "SELECT id FROM users WHERE id = ?";
+    // Vérifier si l'ID de l'organisateur existe et s'il n'est pas banni
+    $sql = "SELECT id, statut FROM users WHERE id = ? AND statut != 'bannis'";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $organizer);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Si l'ID de l'organisateur n'existe pas
+    // Si l'ID de l'organisateur n'existe pas ou s'il est banni
     if ($result->num_rows === 0) {
-        return "L'ID de l'organisateur n'existe pas.";
+        return "L'ID de l'organisateur n'existe pas ou il est banni.";
     }
 
-    // Si l'ID existe, mettre à jour l'événement
+    // Si l'ID existe et l'utilisateur n'est pas banni, mettre à jour l'événement
     $sql = "UPDATE events SET name = ?, nombre_participant = ?, lieu = ?, date_event = ?, duree = ?, organizer_id = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sissssi", $name, $participants, $location, $date, $duration, $organizer, $eventId);
 
     return $stmt->execute() ? true : false;
 }
-
-
 
 // Handle Search Request
 $event = null;
@@ -77,6 +75,7 @@ if (isset($_POST['delete'])) {
         echo "<script>alert('Failed to delete the event.');</script>";
     }
 }
+
 // Handle Update Request
 if (isset($_POST['update'])) {
     $eventId = $_POST['ID'];
@@ -95,9 +94,10 @@ if (isset($_POST['update'])) {
         
         if ($updateResult === true) {
             echo "<script>alert('Event updated successfully!');</script>";
-            $event = searchEvent($eventId);  // Refresh the event after update
+            // Redirection vers la même page pour recharger les informations mises à jour
+            header("Location: events.php");
+            exit;
         } elseif ($updateResult === "L'ID de l'organisateur n'existe pas.") {
-            // Afficher une alerte si l'ID de l'organisateur est incorrect
             echo "<script>alert('L\'ID de l\'organisateur n\'existe pas.');</script>";
         } else {
             echo "<script>alert('Failed to update the event.');</script>";
