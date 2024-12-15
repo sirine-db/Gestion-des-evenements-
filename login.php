@@ -162,22 +162,22 @@ if (isset($_SESSION['email'])) {
 <header id="header">
         <nav>
             <ul class="nav-1">
-                <li><a href="http://localhost/tpweb/pageacceil.php#hero" >Accueil</a></li>
-                <li><a href="http://localhost/tpweb/event.php">evenements</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.php#about" >Àpropos</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.php#contact">Contact</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#hero" >Accueil</a></li>
+                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#about" >Àpropos</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#contact">Contact</a></li>
             </ul>
             <ul class="nav-2">
 
-                <li> <a href="http://localhost/tpweb/signup.php" >sign-up</a></li>
+                <li> <a href="http://localhost/tp-web/signup.php" >sign-up</a></li>
             </ul>
         
         </nav>
     </header>
     <div class="form-container">
         <h2>Connexion</h2>
-        <a href="http://localhost/tpweb/signup.php">Pas encore inscrit ? Créez un compte</a>
-        <form action="http://localhost/tpweb/authentification.php" method="POST">
+        <a href="http://localhost/tp-web/signup.php">Pas encore inscrit ? Créez un compte</a>
+        <form action="http://localhost/tp-web/authentification.php" method="POST">
             <label for="login">Email :</label>
             <input type="text" id="login" name="login" placeholder="exemple@mail.com" required>
             
