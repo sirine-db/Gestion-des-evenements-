@@ -93,13 +93,13 @@ $conn->close();
                 <div id="buttons">
                     <label for="ID">Request ID</label>
                     <input type="number" name="ID" id="ID" required>
-                    <button type="submit" name="action" value="search" id="search">SEARCH</button>
+                    <button type="submit" name="action" value="search" id="search" >SEARCH</button>
                     <button type="submit" name="action" value="accept" id="accept">ACCEPT</button>
                     <button type="submit" name="action" value="reject" id="reject">REJECT</button>
                 </div>
             </form>
 
-            <div id="request-info">
+                <div id="request-info">
                 <?php if (isset($participation)) : ?>
                     <p><strong>ID:</strong> <?= htmlspecialchars($participation['id']) ?></p>
                     <p><strong>User ID:</strong> <?= htmlspecialchars($participation['user_id']) ?></p>

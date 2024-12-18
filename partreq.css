@@ -143,7 +143,7 @@ body {
     background-color: #d81711;
 }
 
-#userss {
+#requests {
     background-color: #45828D;
     padding: 20px;
     border-radius: 15px;
@@ -151,7 +151,7 @@ body {
     flex-direction: column;
     gap: 20px;
 }
-#user-info {
+#request-info {
     background-color: #205a6c;
     border-radius: 15px;
     padding: 20px;
@@ -164,12 +164,12 @@ body {
     position: relative;
 }
 
-#user-info p {
+#request-info p {
     color: rgb(254, 254, 254); 
     font-weight: bold;
 }
 
-#user-info span {
+#request-info span {
     color: black; 
 }
 

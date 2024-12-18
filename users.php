@@ -73,7 +73,8 @@ $conn->close();
 ?>
 
 
-
+<!DOCTYPE html>
+<html lang="en">
   <aside class="sidebar">
         <div class="logo">
             <i class="fa fa-user-cog"></i>
@@ -103,7 +104,6 @@ $conn->close();
 
 <body>
   
-
     <main class="main-content">
         <header>
             <h1>Users List</h1>

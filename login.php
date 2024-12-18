@@ -7,6 +7,7 @@ if (isset($_SESSION['email'])) {
     header("Location: bienvenue.php");
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
