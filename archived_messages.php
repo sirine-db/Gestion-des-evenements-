@@ -9,7 +9,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve all archived messages
 $result = $conn->query("SELECT m.id, m.subject, m.body, m.status, m.sent_at, u.nom, u.adresse_mail
                         FROM messages m
                         JOIN users u ON m.sender_id = u.id
@@ -18,7 +17,6 @@ $result = $conn->query("SELECT m.id, m.subject, m.body, m.status, m.sent_at, u.n
 
 $archivedMessages = $result->fetch_all(MYSQLI_ASSOC);
 
-// Close the connection
 $conn->close();
 ?>
 

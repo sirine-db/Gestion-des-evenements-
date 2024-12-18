@@ -1,37 +1,48 @@
 <?php
-// Paramètres de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "evenement_platform";
+// Démarrer la session
+session_start();
 
-// Créer une connexion
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Connexion à la base de données
+$host = "localhost";
+$user = "root";
+$password = "pswd";
+$dbname = "dz_events";
+
+$conn = new mysqli($host, $user, $password, $dbname);
 
 // Vérifier la connexion
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Connexion échouée : " . $conn->connect_error);
 }
 
-// Récupérer l'ID de l'événement depuis le formulaire
-$id = $_POST['event_id'];
+// Vérifier si l'ID de l'événement est reçu
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'])) {
+    $event_id = intval($_POST['event_id']); // Convertir en entier pour éviter les injections SQL
+    
+    // Préparer la requête de suppression
+    $sql = "DELETE FROM event_participation WHERE event_id = ? AND user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $event_id, $_SESSION['id']);
+    
+    if ($stmt->execute()) {
+        // Rediriger vers la page des participations avec un message de succès
+        header("Location: mesparticipations.php?status=success");
+    } else {
+        // Rediriger avec un message d'erreur
+        header("Location: participations.php?status=error");
+    }
 
-// Requête SQL pour supprimer l'enregistrement avec le event_id donné
-$sql = "DELETE FROM participation_event WHERE event_id = ?";
-
-// Préparer la requête SQL
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id); // "i" signifie un entier (integer)
-
-// Exécuter la requête
-if ($stmt->execute()) {
-    header("Location: mesparticipations.php");
-    exit();
+    $stmt->close();
 } else {
-    echo "Erreur lors de la suppression : " . $stmt->error;
+    // Rediriger avec un message d'erreur
+    header("Location: participations.php?status=invalid");
 }
 
-// Fermer la connexion
-$stmt->close();
 $conn->close();
 ?>

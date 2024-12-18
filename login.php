@@ -15,7 +15,6 @@ if (isset($_SESSION['email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
     <style>
-        /* Styles globaux */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -165,7 +164,6 @@ if (isset($_SESSION['email'])) {
                 <li><a href="http://localhost/tp-web/pageacceil.php#hero" >Accueil</a></li>
                 <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
                 <li><a href="http://localhost/tp-web/pageacceil.php#about" >Àpropos</a></li>
-                <li><a href="http://localhost/tp-web/pageacceil.php#contact">Contact</a></li>
             </ul>
             <ul class="nav-2">
 

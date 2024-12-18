@@ -156,11 +156,11 @@ tbody {
 }
 
 tbody tr {
-    height: 50px; /* Increase row height */
+    height: 50px; 
 }
 
 tbody tr:hover {
-    background-color: #f0f0f0; /* Highlight on hover */
+    background-color: #f0f0f0;
 }
 
 
@@ -185,15 +185,15 @@ table th {
 }
 
 table tbody tr:nth-child(odd) {
-    background-color: #f9f9f9; /* Light grey for odd rows */
+    background-color: #f9f9f9; 
 }
 
 table tbody tr:nth-child(even) {
-    background-color: #ffffff; /* White for even rows */
+    background-color: #ffffff; 
 }
 
 table tbody tr:hover {
-    background-color: #f0f0f0; /* Light grey on hover */
+    background-color: #f0f0f0; 
 }
 
 table td a {

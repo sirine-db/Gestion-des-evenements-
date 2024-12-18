@@ -1,37 +1,41 @@
 <?php
-// Paramètres de connexion à la base de données
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['email'])) {
+    // Rediriger vers la page de connexion si non connecté
+    header("Location: connexion.php");
+    exit();
+}
+
+// Connexion à la base de données
 $servername = "localhost";
 $username = "root";
-$password = "";
-$dbname = "evenement_platform";
-
-// Créer une connexion
+$password = "pswd";
+$dbname = "dz_events";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Vérifier la connexion
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Récupérer l'ID de l'événement depuis le formulaire
-$id = $_POST['event_id'];
+// Vérifier si l'ID de l'événement est passé
+if (isset($_POST['event_id']) && isset($_POST['delete_event'])) {
+    $event_id = $_POST['event_id'];
 
-// Requête SQL pour supprimer l'enregistrement avec le event_id donné
-$sql = "DELETE FROM events WHERE id = ?";
+    // Requête pour supprimer l'événement
+    $sql = "DELETE FROM events WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $event_id);
 
-// Préparer la requête SQL
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id); // "i" signifie un entier (integer)
-
-// Exécuter la requête
-if ($stmt->execute()) {
-    header("Location: mesorganisations.php");
-    exit();
-} else {
-    echo "Erreur lors de la suppression : " . $stmt->error;
+    if ($stmt->execute()) {
+        // Rediriger vers la page principale après la suppression
+        header("Location: mesorganisations.php");
+        exit();
+    } else {
+        echo "Erreur lors de la suppression de l'événement.";
+    }
 }
 
-// Fermer la connexion
-$stmt->close();
 $conn->close();
 ?>

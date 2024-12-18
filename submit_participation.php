@@ -6,27 +6,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Récupérer les données du formulaire
     $user_id = $_SESSION['id'];  // ID utilisateur provenant de la session
     $motivation = $_POST['motivation'];
-    $statut = "en cour";  // Valeur fixe pour le statut
-    $statutsocial = $_POST['statutsocial'];
+    $participation_status = "en_cours";  // Valeur fixe pour le statut
+    $statut = $_POST['statut'];
     $attentes = $_POST['attentes'];
     $rajout = $_POST['rajout'];
     $event_id = $_POST['event_id'];
 
-
-    // Informations de connexion à la base de données
+    // Connexion à la base de données
     $servername = "localhost";
     $username = "root";
-    $password = "";
-    $dbname = "evenement_platform";
+    $password = "pswd";
+    $dbname = "dz_events";
     $conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Vérifier la connexion
     if ($conn->connect_error) {
-        die("Connexion échouée : " . $conn->connect_error);
+        die("Connection failed: " . $conn->connect_error);
     }
 
     // Préparer la requête pour insérer la participation
-    $sql = "INSERT INTO participation_event (user_id, statutsocial, motivation, statut, attentes, rajout, event_id) 
+    $sql = "INSERT INTO event_participation (user_id, motivation, statut, participation_status, attentes, rajout, event_id) 
             VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     // Préparer la requête avec la base de données
@@ -37,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $stmt->bind_param("issssss", $user_id, $statutsocial, $motivation, $statut, $attentes, $rajout, $event_id);
+    $stmt->bind_param("issssss", $user_id, $motivation, $statut, $participation_status, $attentes, $rajout, $event_id);
 
     // Vérifier si l'exécution est réussie
     if (!$stmt->execute()) {
@@ -53,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 
     // Rediriger vers une page de confirmation ou autre
-    header("Location: http://localhost/tpweb/mesparticipations.php");
+    header("Location: http://localhost/tp-web/mesparticipations.php");
     exit();
-}
+} 
 ?>

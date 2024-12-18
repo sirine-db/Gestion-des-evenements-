@@ -14,7 +14,7 @@ body {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    justify-content:  flex-start;color: #ffffff;
+    justify-content:  flex-start;
 }
 
 .sidebar .logo {
@@ -87,6 +87,7 @@ body {
 
 }
 
+/******************************button**************************/
 
 
 #buttons {

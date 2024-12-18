@@ -1,5 +1,3 @@
-
-/* Structure générale */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -99,7 +97,7 @@ body {
 
 * Conteneur pour les blocs statistiques */
 #Tableau-de-bord {
-    width: 100%; /* Occupe toute la largeur disponible */
+    width: 100%; 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -111,7 +109,7 @@ body {
     display: flex;
     gap: 20px; /* Espacement horizontal entre les blocs */
     justify-content: center; /* Centre les blocs horizontalement */
-    flex-wrap: nowrap; /* Empêche le retour à la ligne */
+    flex-wrap: nowrap; 
     max-width: 100%;
 }
 
@@ -120,8 +118,8 @@ body {
     background-color: #2A6171;
     color: #fff;
     text-align: center;
-    width: 150px; /* Largeur des blocs */
-    height: 120px; /* Hauteur des blocs */
+    width: 150px; 
+    height: 120px; 
     padding: 10px;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -135,14 +133,14 @@ body {
 #notifications {
     background-color: #ffffff;
     color: hsl(226, 74%, 20%);
-    width: 100%; /* Largeur réduite pour un meilleur design */
+    width: 100%; 
     max-width: 800px;
-    padding: 10px 20px; /* Réduit la hauteur en diminuant le padding vertical */
+    padding: 10px 20px;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-    margin: 20px auto; /* Centré avec espace vertical réduit */
-    overflow: hidden; /* Empêche le contenu de dépasser si nécessaire */
+    margin: 20px auto; 
+    overflow: hidden;
 }
 
 #notifications{

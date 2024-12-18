@@ -187,7 +187,7 @@ if (!isset($_SESSION['email'])) {
         </div>
 
         <!-- Formulaire -->
-        <form action="http://localhost/tpweb/preference.php" method="POST" class="preferences-form" onsubmit="return validateForm()">
+        <form action="http://localhost/tp-web/preference.php" method="POST" class="preferences-form" onsubmit="return validateForm()">
             <fieldset>
                 <legend>Sélectionnez les événements qui vous intéressent :</legend>
 

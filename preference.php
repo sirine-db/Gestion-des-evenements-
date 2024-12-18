@@ -1,5 +1,5 @@
 <?php
-session_start();  // Assurer que la session est bien démarrée
+session_start();  
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Vérifier si des catégories sont sélectionnées
@@ -11,19 +11,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Connexion à la base de données
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "evenement_platform";
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "pswd";
+$dbname = "dz_events";
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Vérifier la connexion
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
     // Préparer et exécuter la requête pour mettre à jour la préférence de l'utilisateur
     $sql = "UPDATE users SET preference = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -34,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Mettre à jour la préférence
-    $preference = 1;  // Assumer que la préférence est 1 (sélectionnée)
+    $preference = 1;  
     $stmt->bind_param("ii", $preference, $user_id);
 
     // Vérifier l'exécution de la mise à jour

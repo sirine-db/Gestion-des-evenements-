@@ -1,90 +1,47 @@
 <?php
+// Démarrer la session
 session_start();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['email'])) {
-    // Rediriger vers la page de connexion si non connecté
-    header("Location: connexion.php");
+    // Redirection vers la page de connexion si non connecté
+    header("Location: login.php");
     exit();
-}
-
+}else{
+// Récupérer l'ID utilisateur depuis la session
+$user_id = $_SESSION['id'];
+    }
 
 // Connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "evenement_platform";
+$host = "localhost";
+$user = "root";
+$password = "pswd";
+$dbname = "dz_events";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($host, $user, $password, $dbname);
 
 // Vérifier la connexion
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Connexion échouée : " . $conn->connect_error);
 }
 
-// Récupérer les données de la table event_participation
-$sql = "SELECT event_id AS idevent, user_id AS iduser,statut AS status FROM participation_event";
-$result = $conn->query($sql);
-
-// Initialiser un tableau pour stocker les résultats
-$events = [];
-
-if ($result) { // Vérifier si la requête a retourné un résultat valide
-    if ($result->num_rows > 0) {
-        // Parcourir les résultats et les ajouter au tableau $events
-        while ($row = $result->fetch_assoc()) {
-            $events[] = [
-                'idevent' => $row['idevent'],
-                'iduser' => $row['iduser'],
-                'status' => $row['status']
-            ];
-        }
-    }
-} else {
-    echo "Erreur de requête: " . $conn->error; // Affiche une erreur si la requête échoue
+// Vérifier si l'ID utilisateur est disponible
+if (!isset($_SESSION['id'])) {
+    die("Erreur : L'ID utilisateur n'est pas défini dans la session.");
 }
 
+// Préparer la requête pour récupérer les participations de l'utilisateur
+$sql = "
+    SELECT ep.event_id, ep.user_id, ep.participation_status, 
+           e.name AS event_name, e.description AS event_description
+    FROM event_participation ep
+    JOIN events e ON ep.event_id = e.id
+    WHERE ep.user_id = ?"; // Utilisation d'un paramètre pour éviter les injections SQL
 
-$evenements = [];
-
-$sql = "SELECT * FROM events"; // Sélectionner tous les événements
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // Boucle pour parcourir tous les événements récupérés
-    while ($row = $result->fetch_assoc()) {
-        // On récupère les photos de l'événement
-        $photo_sql = "SELECT photo_url FROM event_photos WHERE event_id = " . $row['id'];
-        $photo_result = $conn->query($photo_sql);
-        $photos = [];
-        
-        if ($photo_result->num_rows > 0) {
-            while ($photo_row = $photo_result->fetch_assoc()) {
-                $photos[] = $photo_row['photo_url']; // Ajoute chaque photo à l'array
-            }
-        }
-
-        // Ajouter l'événement à la table $evenements
-        $evenements[] = [
-            "id" => $row["id"],
-            "nom" => $row["nom"],
-            "description" => $row["description"], // Si tu as une description
-            "organisateur_id" => $row["organizer_id"],
-            "nbr_participants_actuels" => $row["nombre_participant"],
-            "lieu" => $row["lieu"],
-            "ville" => $row["ville"],
-            "date_debut" => $row["date_event"],
-            "date_fin" => $row["date_event"], // Ou utilise date_fin si tu as un champ distinct
-            "heure_debut" => $row["heure_debut"],
-            "heure_fin" => $row["heure_fin"], // Ou utilise un champ horaire de fin si disponible
-            "categorie" => $row["categorie"],
-            "photos" => $photos, // Ajout des photos de l'événement
-        ];
-    }
-} 
-
-// Fermer la connexion
-$conn->close();
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id); 
+$stmt->execute();
+$result = $stmt->get_result();
 
 ?>
 
@@ -93,176 +50,20 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes Événements</title>
+    <title>Mes Participations</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(120deg, #1a1a1d, #4b134f);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        header {
-            background: rgba(0, 0, 0, 0.8);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        }
-
-        header nav ul {
-            list-style: none;
-            display: flex;
-            margin: 0;
-            padding: 0;
-        }
-
-        header nav ul li {
-            margin: 0 15px;
-        }
-
-        header nav ul li a {
-            color: #00f6ff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease-in-out;
-        }
-
-        header nav ul li a:hover {
-            color: #ff007c;
-            text-shadow: 0 0 10px #ff007c;
-        }
-
-        .event-container {
-            position: absolute;
-            top: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            width: 80%;
-            max-width: 800px;
-            margin-top: 100px;
-            box-sizing: border-box;
-        }
-
-        .event-container h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #ff0077, #00f6ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .event {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            transition: background 0.3s ease;
-        }
-
-        .event:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .event h3 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #00f6ff;
-        }
-
-        .event p {
-            margin: 5px 0;
-        }
-
-        .event .date, .event .location, .event .status {
-            color: #ff0077;
-        }
-
-        .event .status {
-            font-weight: bold;
-        }
-
-        .event .delete-btn {
-            background-color: #ff0077;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .event .delete-btn:hover {
-            background-color: #c7005f;
-        }
-
-        .event .event-link {
-            color: #00f6ff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .event .event-link:hover {
-            text-decoration: underline;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        body {   margin: 0;
-    padding: 0;
+     body {
     font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
     background: linear-gradient(120deg, #1a1a1d, #4b134f);
-    color: white;
-    overflow-x: hidden;
-        
-        #deconnect{
-            color:red;
-        }
-      
-        
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
 header {
     background: rgba(0, 0, 0, 0.8);
     position: fixed;
@@ -270,11 +71,11 @@ header {
     left: 0;
     z-index: 1000;
     width: 100%;
-    padding: 10px 20px;
+    padding: 30px 500px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-    display: flex; /* Active Flexbox */
-    align-items: center; /* Aligne les éléments verticalement au centre */
-    justify-content: space-between; /* Sépare les éléments : un à gauche, un à droite */
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
 }
 
 /* Navigation (menus) */
@@ -294,12 +95,11 @@ header nav ul li {
     margin: 0 20px;
 }
 header nav ul li img {
-
-    width: 80px; /* Largeur souhaitée */
-    height: 80px; /* Hauteur souhaitée (identique à la largeur pour un cercle parfait) */
-    border-radius: 50%; /* Rend l'image circulaire */
-    object-fit: cover; /* Maintient la qualité de l'image en la recadrant au besoin */
-    overflow: hidden; /* Empêche tout débordement */
+    width: 80px; 
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover; 
+    overflow: hidden; 
 }
 
 header nav ul li a {
@@ -314,231 +114,157 @@ header nav ul li a:hover {
     text-shadow: 0 0 10px #ff007c;
 }
 
-/* Alignement de la barre de recherche */
-.search-bar {
-    display: flex;
-    align-items: center; /* Aligne les champs de recherche verticalement au centre */
-    position:absolute; /* Pousse la barre de recherche à l'extrême droite */
-    left : 50%;
-    top:33%;
-}
-.profiledeco {
-            display: none; /* Caché par défaut */
-            position: absolute; /* Permet de positionner avec précision via top et left */
-        }
-        .profiledeco li {
-            list-style: none; /* Supprime les puces des listes */
-            margin: 5px 0; /* Espacement vertical entre les éléments */
-        }
-
-/* Champs de recherche */
-.search-bar input[type="text"],
-.search-bar select {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #333;
-    transition: all 0.3s ease-in-out;
+.event-container {
+    position: absolute;
+    top: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    width: 80%;
+    max-width: 800px;
+    margin-top: 100px;
+    box-sizing: border-box;
 }
 
-.search-bar input[type="text"]:focus,
-.search-bar select:focus {
-    background: rgba(255, 255, 255, 1);
-    outline: none;
+.event-container h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #ff0077, #00f6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Bouton de recherche */
-.search-bar button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    background-color: #00f6ff;
-    color: white;
+.event {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+}
+
+.event:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #00f6ff;
+}
+
+.event p {
+    margin: 5px 0;
+}
+
+.event .date, .event .location, .event .status {
+    color: #ff0077;
+}
+
+.event .status {
     font-weight: bold;
-    margin-left: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
 }
 
-.search-bar button:hover {
-    background-color: #ff007c;
+.event .delete-btn {
+    background-color: #ff0077;
     color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-
-.vide {
-    height: 100px;
-    width: 100%;
+.event .delete-btn:hover {
+    background-color: #c7005f;
 }
 
-
-/* Effet au survol du bouton */
-.search-bar button:hover {
-    background: linear-gradient(90deg, #ff007c, #00f6ff);
-    transform: translateY(-3px);
+.event .event-link {
+    color: #00f6ff;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-/* Bouton du profil */
-.profile-trigger {
-            background-color:transparent;
-            color: white;
-            border: none;
-            padding: 1px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
+.event .event-link:hover {
+    text-decoration: underline;
+}
+
+#deconnect {
+    color: red;
+}
+
+header nav ul .ab {
+    position: relative;
+    top: 10px;
+}
+
+header nav ul li img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}    
+
+.form-container button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(90deg, #ff0077, #00f6ff);
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .form-container button:hover {
+        background: linear-gradient(90deg, #c7005f, #008fbf);
+        transform: translateY(-3px);
+    }
 
 
-        /* Menu Profil */
-        .profiledeco {
-            display: none;
-            position: absolute;
-            top: 110px; /* Position sous le bouton */
-            left: 0;
-            background-color: #2f3542;
-            border-radius: 8px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            min-width: 200px;
-            z-index: 1000;
-        }
-
-        .profiledeco ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .profiledeco li {
-            margin: 10px 0;
-        }
-
-        .profiledeco a {
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            display: block;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        
-      
-        .profiledeco a:hover {
-            background-color: #57606f;
-        }
-
-        /* Animation du menu */
-        .profiledeco.show {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-
-
-
-
-
-    </style>
+</style>
 </head>
 <body>
-
-<header id="header">
-        <nav>
-
-            <ul class="nav-2">
-            <li>
-  <button class="profile-trigger" onclick="toggleMenu()"><img src="<?php echo $_SESSION['photodeprofile']  ?>" alt="pp">
-  </button>
-            </li>
-            <li class="ab"><a href="http://localhost/tpweb/bienvenue.php" >Accueil</a></li>
-                <li class="ab">  <a href="http://localhost/tpweb/mesorganisations.php">Organisations</a></li>
-             
-             
-            </ul>
-        
-        </nav>
-        <div class="container">
-
-       
-    <div class="search-bar">
-        <form method="POST" action="">
-            <input type="text" name="search" placeholder="Rechercher un evenement" />
-            <button type="submit">Rechercher</button>
-        </form>
-    </div>
-
-    <div class="profiledeco" id="profiledeco">
-            <ul>
-            <li><a href="#">Voir mon profil</a></li>
-            <li><a href="#">parametres</a></li>
-            <li style="color:red;"><a href="deconnexion.php">Déconnexion</a></li>
-            </ul>
-        </div>
-
-    </header>
-
- 
-    
-   
-<div class="event-container">
-
-    <h2>Mes participations</h2>
-    
-    <!-- Affichage des événements de l'utilisateur connecté -->
-    <?php foreach ($events as $event): ?>
-        <?php if ($_SESSION['id'] === $event['iduser']): ?>
-            <?php
-            // Récupérer le titre de l'événement à partir de la base de données des événements
-            $eventDetails = null;
-            foreach ($evenements as $ev) {
-                if ($ev['id'] === $event['idevent']) {
-                    $eventDetails = $ev;
-                    break;
-                }
-            }
-            ?>
-            <?php if ($eventDetails): ?>
+    <div class="event-container">
+        <h2>Liste de mes participations</h2>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="event">
-                    <h3>
-                        <a href="eventdetails.php?id=<?php echo $eventDetails['id']; ?>" class="event-link">
-                            <?php echo $eventDetails['nom']; ?>
-                        </a>
-                    </h3>
-                    <p class="status">État de la demande : <?php echo $event['status']; ?></p>
-                    <form method="POST" action="delete_event.php">
-                        <input type="hidden" name="event_id" value="<?php echo $eventDetails['id']; ?>">
+                    <h3>Événement : <?= htmlspecialchars($row['event_name']) ?></h3>
+                    <p>Description : <?= htmlspecialchars($row['event_description']) ?></p>
+                    <p>État de la participation : <strong><?= htmlspecialchars($row['participation_status']) ?></strong></p>
+                    <form action="delete_event.php" method="POST" style="display:inline;">
+                        <input type="hidden" name="event_id" value="<?= $row['event_id'] ?>">
                         <button type="submit" class="delete-btn">Supprimer</button>
                     </form>
                 </div>
-            <?php endif; ?>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p>Aucune participation trouvée.</p>
         <?php endif; ?>
-    <?php endforeach; ?>
-
-</div>
-
-
-</div>
-
-
+        <form action="http://localhost/tp-web/pageacceil.php" method="POST" class="form-container">
+            <button type="submit" >Back</button>
+        </form>
+    </div>
 </body>
 </html>
+
+<?php
+$stmt->close();
+$conn->close();
+?>

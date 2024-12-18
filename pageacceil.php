@@ -25,13 +25,12 @@ if (isset($_SESSION['email'])) {
         <nav>
             <ul class="nav-1">
                 <li><a href="#hero" >Accueil</a></li>
-                <li><a href="http://localhost/tpweb/event.php">evenements</a></li>
                 <li><a href="#about" >Àpropos</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
             </ul>
             <ul class="nav-2">
-                <li>  <a href="http://localhost/tpweb/login.php">login</a></li>
-                <li> <a href="http://localhost/tpweb/signup.php" >sign-up</a></li>
+                <li>  <a href="http://localhost/tp-web/login.php">login</a></li>
+                <li> <a href="http://localhost/tp-web/signup.php" >sign-up</a></li>
             </ul>
         
         </nav>
@@ -43,7 +42,7 @@ if (isset($_SESSION['email'])) {
             <p> Rejoignez la Révolution des Événements en Algérie
                 DZevent connecte les passionnés d'événements. Que vous soyez ici pour participer, organiser ou collaborer, découvrez un espace où tout devient possible.</p>
             </p>
-            <a href="http://localhost/tpweb/event.php" class="cta-btn">nos evenement</a>
+            <a href="http://localhost/tp-web/event.php" class="cta-btn">nos evenement</a>
         </div>
     </section>
 
@@ -72,20 +71,6 @@ if (isset($_SESSION['email'])) {
             </div>
         </div>
     </section>
-    
-    
-    
-    <section id="contact" class="contact">
-        <h2>Contactez notre administration</h2>
-        <p>Vous avez une question ? Une suggestion ? Ou envie de collaborer ? Notre équipe est à votre écoute !</p>
-        <form id="contact-form">
-            <input type="text" id="name" placeholder="Votre nom" required>
-            <input type="email" id="email" placeholder="Votre email" required>
-            <textarea id="message" placeholder="Votre message" required></textarea>
-            <button type="submit" class="submit-btn">Envoyer</button>
-        </form>
-    </section>
-
     <footer>
         <p>&copy; 2024 DZevent. Tous droits réservés.</p>
     </footer>

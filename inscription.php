@@ -11,15 +11,18 @@ if (isset($_SESSION['email'])) {
 //hna c la connexion a la bdd
 //PS: g recuperee les valeur 7tithm f la mm table ly knt ndir
 //biha simulation pour pas refaire le travail
+
+// Database connection
 $servername = "localhost";
 $username = "root";
-$password = "";
-$dbname = "evenement_platform";
-
+$password = "pswd";
+$dbname = "dz_events";
 $conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($conn->connect_error) {
-    die("Connexion échouée : " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
+
 $utilisateurs_valides = [];
 $sql = "SELECT id, nom, prenom, numero_tele, adresse_mail, password, username, role, statut, photo_path FROM users";
 $result = $conn->query($sql);
@@ -30,7 +33,6 @@ $result = $conn->query($sql);
         ];
     }
   
-
 
 //c bon les donnee sont dans ma table $utilisateurs_valides
 // hna jbna les donnee ly tb3tou via la methode post

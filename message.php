@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 $message = null;
 $latestMessages = [];
 
-// Retrieve the 3 most recent messages with user details (name, email)
+// Retrieve the 3 most recent messages with user details 
 $result = $conn->query("
     SELECT m.id, m.subject, m.body, m.status, m.sent_at, u.nom, u.adresse_mail
     FROM messages m

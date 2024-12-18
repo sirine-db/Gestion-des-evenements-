@@ -4,7 +4,7 @@ session_start();
 // Vérifier si l'utilisateur est connecté
 if (isset($_SESSION['email'])) {
     // Rediriger vers la page de connexion si non connecté
-    header("Location: bienvenue.php");
+    header("Location: login.php");
     exit();
 }
 ?>
@@ -164,13 +164,12 @@ if (isset($_SESSION['email'])) {
 <header id="header">
         <nav>
             <ul class="nav-1">
-                <li><a href="http://localhost/tpweb/pageacceil.php#hero" >Accueil</a></li>
-                <li><a href="http://localhost/tpweb/event.php">evenements</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.php#about" >Àpropos</a></li>
-                <li><a href="http://localhost/tpweb/pageacceil.php#contact">Contact</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#hero" >Accueil</a></li>
+                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#about" >Àpropos</a></li>
             </ul>
             <ul class="nav-2">
-                <li>  <a href="http://localhost/tpweb/login.php">login</a></li>
+                <li>  <a href="http://localhost/tp-web/login.php">login</a></li>
              
             </ul>
         
@@ -178,8 +177,8 @@ if (isset($_SESSION['email'])) {
     </header>
     <div class="form-container">
         <h2>Inscription</h2>
-        <a href="http://localhost/tpweb/login.php">Déjà inscrit ? Connectez-vous</a>
-        <form action="http://localhost/tpweb/inscription.php" method="POST" onsubmit="return validateForm()">
+        <a href="http://localhost/tp-web/login.php">Déjà inscrit ? Connectez-vous</a>
+        <form action="http://localhost/tp-web/inscription.php" method="POST" onsubmit="return validateForm()">
             <input type="text" id="mail" name="mail" placeholder="Email (ex: exemple@mail.com)" required>
             <input type="text" id="username" name="username" placeholder="Nom d'utilisateur" required>
             <input type="text" id="num" name="num" placeholder="Numéro de téléphone (ex: 0777777777)" required>

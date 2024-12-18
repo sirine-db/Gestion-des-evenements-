@@ -20,15 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['unban_id'])) {
         $unban_id = intval($_POST['unban_id']);
         if ($unban_id > 0) {
-            // Update the user's statut to 'connecté' (unbanned)
+
             $stmt = $conn->prepare("UPDATE users SET statut = 'connecté' WHERE id = ?");
             $stmt->bind_param('i', $unban_id);
             $stmt->execute();
             echo "<script>alert('User has been unbanned');</script>";
             
-            // Redirect to the banned users page to refresh the list
             header("Location: banned.php");
-            exit(); // Make sure to stop further script execution after the redirect
+            exit(); 
         }
     }
 
@@ -46,12 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    // Fetch all banned users
     $result = $conn->query("SELECT * FROM users WHERE statut = 'bannis'");
     $users = $result->fetch_all(MYSQLI_ASSOC);
 }
 
-// Close the connection
 $conn->close();
 ?>
 

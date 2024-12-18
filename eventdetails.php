@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire de Participation</title>
     <style>
-        /* Reprise du thème global */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -53,19 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             justify-content: center;
             align-items: center;
             display: flex;
-    justify-content: flex-end; /* Aligne à droite */
-    align-items: center; /* Centre verticalement */
+            justify-content: flex-end; 
+            align-items: center; 
         
         }
-
-
-
-
-
-
-
-
-
         .event-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -106,12 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     </style>
 </head>
 <body>
-    
-
-
-
-
-
 
     <div class="event-container">
         <div class="event-header">

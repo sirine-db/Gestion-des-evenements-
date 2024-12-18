@@ -1,7 +1,5 @@
 <?php
-
 session_start();
-
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['email'])) {
     // Rediriger vers la page de connexion si non connecté
@@ -10,22 +8,18 @@ if (!isset($_SESSION['email'])) {
 
 }
 
-
 // Vérifier si la méthode de la requête est GET
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Récupérer les données envoyées via GET
     $event = [
         "id" => $_GET['id'],  // ID de l'événement
-        "nom" => $_GET['nom'],  // Nom de l'événement
+        "name" => $_GET['name'],  // Nom de l'événement
         "description" => $_GET['description'],  // Description de l'événement
         "organisateur_id" => $_GET['organisateur_id'],  // ID de l'organisateur
         "nbr_participants_actuels" => $_GET['nbr_participants_actuels'],  // Nombre de participants actuels
         "lieu" => $_GET['lieu'],  // Lieu de l'événement
-        "ville" => $_GET['ville'],  // Ville de l'événement
-        "date_debut" => $_GET['date_debut'],  // Date de début
-        "date_fin" => $_GET['date_fin'],  // Date de fin
-        "heure_debut" => $_GET['heure_debut'],  // Heure de début
-        "heure_fin" => $_GET['heure_fin'],  // Heure de fin
+        "date_event" => $_GET['date_event'],  // Date de début
+        "duree" => $_GET['duree'],  // Heure de début
         "categorie" => $_GET['categorie'],  // Catégorie de l'événement
         "photos" => $_GET['photos'],  // Catégorie de l'événement
  
@@ -36,8 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -45,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire de Participation</title>
     <style>
-        /* Reprise du thème global */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -56,9 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             justify-content: center;
             align-items: center;
             display: flex;
-    justify-content: flex-end; /* Aligne à droite */
-    align-items: center; /* Centre verticalement */
-        
+            justify-content: flex-end;
+            align-items: center; 
         }
 
         .form-container {
@@ -88,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             margin: 10px 0 5px;
             font-weight: bold;
         }
-
+      
         .form-container input,
         .form-container textarea,
         .form-container select {
@@ -172,9 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 <body>
     <div class="form-container">
         <h2>Formulaire de Participation</h2>
-        <form action="http://localhost/tpweb/submit_participation.php" method="POST">
+        <form action="http://localhost/tp-web/submit_participation.php" method="POST">
             <label for="name" >Nom complet :</label>
-
             <input type="text" id="name" name="name" placeholder="Votre nom" value="<?php echo $_SESSION['nom'].' '.$_SESSION['prenom'];?>" required>
 
             <label for="email">Email :</label>
@@ -183,58 +172,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <label for="phone" >Numéro de téléphone :</label>
             <input type="text" id="phone" name="phone" value=<?php echo $_SESSION['num']?> >
 
-
             <label for="motivation">Motivation :</label>
             <textarea id="motivation" name="motivation" placeholder="Expliquez pourquoi vous souhaitez participer" rows="4" required></textarea>
-
-
-            
+     
             <label for="attentes">vos attentes :</label>
             <textarea id="attentes" name="attentes" placeholder="Expliquez brievement vos attente de cette event" rows="3" required></textarea>
+            <label for="statut">statut :</label>
 
-
-
-            <label for="statutsocial">statutsocial :</label>
-            <select id="statutsocial" name="statutsocial" required>
-                <option value="">-- Sélectionnez votre statutsocial --</option>
-                <option value="etudiant">étudiant</option>
-                <option value="professionnelle">professionnelle</option>
-                <option value="retraité">retraité</option>
-                <option value="autre">autre</option>
-                
-            </select>
-
-          
+            <select id="statut" name="statut" required>
+            <option value="">-- Sélectionnez votre statut --</option>
+            <option value="etudiant">etudiant</option>
+            <option value="professionnelle">professionnelle</option>
+            <option value="retraité">retraité</option>
+            <option value="autre">autre</option>
+            </select>   
             <label for="rajout">rajouter quelque chose :</label>
             <textarea id="rajout" name="rajout" placeholder="qlq chose que vous voulez specifier de plus" rows="2" required></textarea>
-
-    
-        <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-
+            <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
             <button type="submit">Reserver ma place</button>
+        </form>
+        <br>
+        <form action="http://localhost/tp-web/bienvenue.php" method="POST">
+            <button type="submit">Back</button>
         </form>
     </div>
 
-
-
-
-
-
-
-    <div class="event-container">
-        
+    <div class="event-container">    
         <div class="event-details">
             <div class="event-photo-container">
             <img src="<?php echo $event['photos']; ?> " alt="">
             </div>
-           
             <p><strong>Description:</strong> <?php echo $event['description']; ?></p>
-            <p><strong>Lieu:</strong> <?php echo $event['lieu']; ?>, <?php echo $event['ville']; ?></p>
-            <p><strong>Date:</strong> <?php echo $event['date_debut']; ?> - <?php echo $event['date_fin']; ?></p>
-            <p><strong>Heure:</strong> <?php echo $event['heure_debut']; ?> - <?php echo $event['heure_fin']; ?></p>
+            <p><strong>Lieu:</strong> <?php echo $event['lieu']; ?>
+            <p><strong>Date:</strong> <?php echo $event['date_event']; ?>
+            <p><strong>duree:</strong> <?php echo $event['duree']; ?> 
             <p><strong>Participants:</strong> <?php echo $event['nbr_participants_actuels']; ?></p>
             <p><strong>Catégorie:</strong> <?php echo $event['categorie']; ?></p>
-
         </div>
     </div>
 </body>

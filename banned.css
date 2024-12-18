@@ -61,9 +61,9 @@ body {
 .main-content {
     flex: 1;
     padding: 20px;
-    margin-left: 20px; /* Ajuste cette valeur */
+    margin-left: 20px;
     margin-top: 0;
-    width: calc(100% - 250px); /* Utilise toute la largeur disponible après la sidebar */
+    width: calc(100% - 250px); 
 }
 
 
@@ -83,7 +83,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/******************************menu*******************************/
+/******************************button**************************/
 #buttons {
     display: flex;
     align-items: center;
@@ -123,14 +123,13 @@ body {
     opacity: 0.9;
 }
 
-/* Unban and Search button have the same style now */
 #unban, #search {
-    background-color: #0e7360; /* Same background color */
-    color: white; /* Ensure the text is white */
+    background-color: #0e7360; 
+    color: white; 
 }
 
 #unban:hover, #search:hover {
-    background-color: #06411b; /* Darker shade on hover */
+    background-color: #06411b;
 }
 
 #userss {
@@ -191,7 +190,7 @@ body {
 }
 
 #banned-users-list button {
-    background-color: #0e7360; /* Matching Search button */
+    background-color: #0e7360; 
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -202,7 +201,7 @@ body {
 }
 
 #banned-users-list button:hover {
-    background-color: #06411b; /* Darker shade on hover */
+    background-color: #06411b;
 }
 
 .sidebar .logo i {

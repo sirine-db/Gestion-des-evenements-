@@ -1,7 +1,8 @@
 <?php
-// Début de la session (si nécessaire)
 session_start();
 
+// Vérifier si l'utilisateur est connecté
+$est_connecte = isset($_SESSION['email']); // Vérifier si l'utilisateur est connecté
 
 $categories = [
     "Musique",
@@ -19,93 +20,82 @@ $categories = [
     "virtuels",
 ];
 
-// Villes des événements
-$villes = [
+$lieus = [
     "Alger",
     "Oran",
     "Constantine",
-    "Annaba"
+    "Annaba",
+    "Setif",
+    "Djijel"
 ];
 
-// Événements$servername = "localhost";
+// Connexion à la base de données
 $servername = "localhost";
 $username = "root";
-$password = "";
-$dbname = "evenement_platform";
-
+$password = "pswd";
+$dbname = "dz_events";
 $conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($conn->connect_error) {
-    die("Connexion échouée : " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
+
 $evenements = [];
 
 $sql = "SELECT * FROM events"; // Sélectionner tous les événements
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    // Boucle pour parcourir tous les événements récupérés
     while ($row = $result->fetch_assoc()) {
-        // On récupère les photos de l'événement
-        $photo_sql = "SELECT photo_url FROM event_photos WHERE event_id = " . $row['id'];
+        $photo_sql = "SELECT photo_path FROM events WHERE id = " . $row['id'];
         $photo_result = $conn->query($photo_sql);
         $photos = [];
-        
+
         if ($photo_result->num_rows > 0) {
             while ($photo_row = $photo_result->fetch_assoc()) {
-                $photos[] = $photo_row['photo_url']; // Ajoute chaque photo à l'array
+                $photos[] = $photo_row['photo_path']; 
             }
         }
-        // Ajouter l'événement à la table $evenements
+
         $evenements[] = [
             "id" => $row["id"],
-            "nom" => $row["name"],
-            "description" => $row["description"], // Si tu as une description
+            "name" => $row["name"],
+            "description" => $row["description"], 
             "organisateur_id" => $row["organizer_id"],
-            "rating" => $row["rating"],
             "nbr_participants_actuels" => $row["nombre_participant"],
             "lieu" => $row["lieu"],
-            "ville" => $row["ville"],
-            "adresse" => $row["adresse"], // GPS
-            "date_debut" => $row["date_event"],
-            "date_fin" => $row["date_event"], // Ou utilise date_fin si tu as un champ distinct
-            "heure_debut" => $row["duree"],
-            "heure_fin" => $row["duree"], // Ou utilise un champ horaire de fin si disponible
+            "duree" => $row["duree"],
+            "date_event" => $row["date_event"],
             "categorie" => $row["categorie"],
-            "photos" => $photos, // Ajout des photos de l'événement
+            "photos" => $photos, 
         ];
     }
-} else {
-    echo "Aucun événement trouvé.";
-}
-
+} 
 $conn->close();
 
-
-
-// Récupération des données soumises par le formulaire
 $search_term = isset($_POST['search']) ? $_POST['search'] : '';
 $categorie_filter = isset($_POST['categorie']) ? $_POST['categorie'] : '';
-$ville_filter = isset($_POST['ville']) ? $_POST['ville'] : '';
+$lieu_filter = isset($_POST['lieu']) ? $_POST['lieu'] : '';
 
-// Filtrer les événements en fonction de la recherche
-$resultats = array_filter($evenements, function($event) use ($search_term, $categorie_filter, $ville_filter) {
-    $match_nom = empty($search_term) || stripos($event['nom'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
+$resultats = array_filter($evenements, function($event) use ($search_term, $categorie_filter, $lieu_filter) {
+    $match_nom = empty($search_term) || stripos($event['name'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
     $match_categorie = empty($categorie_filter) || $event['categorie'] == $categorie_filter;
-    $match_ville = empty($ville_filter) || $event['ville'] == $ville_filter;
-
-    return $match_nom && $match_categorie && $match_ville;
+    $match_lieu = empty($lieu_filter) || $event['lieu'] == $lieu_filter;
+    return $match_nom && $match_categorie && $match_lieu;
 });
-?><?php
-// Nombre d'événements par page
-$events_per_page = 8; // Afficher 3 événements par page
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $events_per_page;
 
-// Découper les événements en fonction de la pagination
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$events_per_page = 8;
+$offset = ($page - 1) * $events_per_page;
+$total_pages = ceil(count($resultats) / $events_per_page);
 $evenements_pagination = array_slice($resultats, $offset, $events_per_page);
 
-// Calculer le nombre total de pages
-$total_pages = ceil(count($resultats) / $events_per_page);
+$page1 = isset($_GET['page1']) ? (int)$_GET['page1'] : 1;
+$events_per_page1 = 4;
+$offset1 = ($page1 - 1) * $events_per_page1;
+$evenements_pagination1 = array_slice($resultats, $offset1, $events_per_page1);
+$total_pages1 = ceil(count($resultats) / $events_per_page1);
+
 ?>
 
 <!DOCTYPE html>
@@ -115,12 +105,12 @@ $total_pages = ceil(count($resultats) / $events_per_page);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recherche d'événements</title>
     <style>
-body {   margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(120deg, #1a1a1d, #4b134f);
-    color: white;
-    overflow-x: hidden;
+    body {   margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(120deg, #1a1a1d, #4b134f);
+        color: white;
+        overflow-x: hidden;
         }
         .container {
             width: 80%;
@@ -132,8 +122,8 @@ body {   margin: 0;
         }
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 événements par ligne */
-            gap: 20px; /* Espacement entre les événements */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
             justify-items: center;
         }
         
@@ -167,43 +157,22 @@ body {   margin: 0;
         .photo-container img.active {
             left: 0;
         }
+        #deconnect{
+            color:red;
+        }
       
-        .event {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 15px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 400px; /* Limiter la taille des événements */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Permet au bouton de se placer au bas */
-    height: 100%; /* Donne une hauteur flexible au conteneur */
-}
-
-
-
-
-
-.event button {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(90deg, #008fbf, #c7005f);
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: auto; /* Pousse le bouton en bas */
-}
-
-.event button:hover {
-    background: linear-gradient(90deg, #c7005f, #008fbf);
-    transform: translateY(-3px);
-}
-
-
+    .event {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 15px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 400px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; 
+        height: 100%;
+    }
         /* Réduire l'espace entre les éléments sur les petits écrans */
         @media (max-width: 768px) {
             .events-grid {
@@ -216,7 +185,6 @@ body {   margin: 0;
             }
         }
         .pagination {
-            text-align: center;
             margin-top: 20px;
         }
         .pagination a {
@@ -231,185 +199,236 @@ body {   margin: 0;
         .pagination span {
             color: #ccc;
             font-size: 18px;
-        }
+            }
+            /* En-tête principal */
         header {
-    background: rgba(0, 0, 0, 0.8);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-}
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            width: 100%;
+            padding: 10px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            display: flex; 
+            align-items: center;
+            justify-content: space-between;
+        }
 
-header nav ul {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-}
+        /* Navigation (menus) */
+        header nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        header nav ul .ab{
+            position: relative;
+            top : 5px; 
+            margin: 10;
+            padding: 40px;
+        }
 
-header nav ul li {
-    margin: 0 15px;
-}
+        header nav ul li {
+            margin: 0 20px;
+        }
+        header nav ul li img {
+            width: 80px; 
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover; 
+            overflow: hidden; 
+        }
 
-header nav ul li a {
-    color: #00f6ff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease-in-out;
-}
+        header nav ul li a {
+            color: #00f6ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease-in-out;
+        }
 
-header nav ul li a:hover {
-    color: #ff007c;
-    text-shadow: 0 0 10px #ff007c;
-}
+        header nav ul li a:hover {
+            color: #ff007c;
+            text-shadow: 0 0 10px #ff007c;
+        }
 
-header .nav-2 {
-   
-    position: absolute;
-    right: 40px; 
-    top: 50%;
-    transform: translateY(-50%);
-}
-/* Style pour la barre de recherche */
-.search-bar {
- 
-}
+        /* Alignement de la barre de recherche */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            margin-left: auto; 
 
-/* Style pour les champs de recherche */
-.search-bar input[type="text"],
-.search-bar select {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #333;
-    transition: all 0.3s ease-in-out;
-}
+        }
+        /* Champs de recherche */
+        .search-bar input[type="text"],
+        .search-bar select {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            transition: all 0.3s ease-in-out;
+        }
 
-.vide {
-    height: 100px;
-    width: 100%;
-}
+        .search-bar input[type="text"]:focus,
+        .search-bar select:focus {
+            background: rgba(255, 255, 255, 1);
+            outline: none;
+        }
 
-/* Style pour le bouton de recherche */
-.search-bar button {
-    padding: 10px 20px;
-    background: linear-gradient(90deg, #00f6ff, #ff007c); /* Dégradé coloré */
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
+        .vide {
+            height: 100px;
+            width: 100%;
+        }
 
-/* Effet au survol du bouton */
-.search-bar button:hover {
-    background: linear-gradient(90deg, #ff007c, #00f6ff);
-    transform: translateY(-3px);
-}
 
+        @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+        /* Style pour le bouton de recherche */
+        .search-bar button,#prt {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #00f6ff, #ff007c); /* Dégradé coloré */
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+     
+        .search-bar button ,#prt:hover {
+            background: linear-gradient(90deg, #ff007c, #00f6ff);
+            transform: translateY(-3px);
+        }
+
+        .event button, #prt{
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #008fbf, #c7005f);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            margin-top: auto;
+        }
+
+        .event button:hover {
+            background: linear-gradient(90deg, #c7005f, #008fbf);
+            transform: translateY(-3px);
+        }
 
     </style>
 </head>
 <body>
 
-    
 <header id="header">
-        <nav>
-
-            <ul class="nav-2">
-            <li><a href="http://localhost/tpweb/pageacceil.php#hero" >Accueil</a></li>
-                <li>  <a href="http://localhost/tpweb/login.php">login</a></li>
-                <li> <a href="http://localhost/tpweb/signup.php" >sign-up</a></li>
-            </ul>
-        
-        </nav>
-        <div class="container">
+    <nav>
+        <ul class="nav-2">
+        <li class="ab"><a href="http://localhost/tp-web/pageacceil.php" >Accueil</a></li>
+        </ul>
+    </nav>
+<div class="container">
     <div class="search-bar">
         <form method="POST" action="">
             <input type="text" name="search" placeholder="Rechercher par nom ou lieu" value="<?php echo $search_term; ?>" />
             <select name="categorie">
                 <option value="">catégorie</option>
                 <?php foreach ($categories as $categorie): ?>
-                    <option value="<?php echo $categorie; ?>" <?php echo ($categorie_filter == $categorie) ? 'selected' : ''; ?>>
-                        <?php echo $categorie; ?>
-                    </option>
+                    <option value="<?php echo $categorie; ?>" <?php echo ($categorie_filter == $categorie) ? 'selected' : ''; ?>><?php echo $categorie; ?></option>
                 <?php endforeach; ?>
             </select>
-            <select name="ville">
-                <option value="">ville</option>
-                <?php foreach ($villes as $ville): ?>
-                    <option value="<?php echo $ville; ?>" <?php echo ($ville_filter == $ville) ? 'selected' : ''; ?>>
-                        <?php echo $ville; ?>
-                    </option>
+            <select name="lieu">
+                <option value="">lieu</option>
+                <?php foreach ($lieus as $lieu): ?>
+                    <option value="<?php echo $lieu; ?>" <?php echo ($lieu_filter == $lieu) ? 'selected' : ''; ?>><?php echo $lieu; ?></option>
                 <?php endforeach; ?>
             </select>
             <button type="submit">Rechercher</button>
         </form>
     </div>
+</header>
 
-    </header>
-    <div class="vide"></div>
-
-
-        <div class="events-grid">
-        <?php foreach ($evenements_pagination as $event): ?>
+<div class="vide"></div>
+<br>
+<br>
+    <h1 id="foryou">Events for you:</h1>
+<br>
+    <div class="events-grid">
+        <?php foreach ($evenements_pagination1 as $event): ?>
             <div class="event">
-            <h2><?php echo $event['nom']; ?></h2>
-            <div class="photo-container">
-                <?php foreach ($event['photos'] as $key => $photo): ?>
-                    <img src="<?php echo $photo; ?>" class="<?php echo ($key == 0) ? 'active' : ''; ?>" id="photo-<?php echo $event['id']; ?>-<?php echo $key + 1; ?>" />
-                <?php endforeach; ?>
+                <h2><?php echo $event['name']; ?></h2>
+                <div class="photo-container">
+                    <?php foreach ($event['photos'] as $key => $photo): ?>
+                        <img src="<?php echo $photo; ?>" class="<?php echo ($key == 0) ? 'active' : ''; ?>" />
+                    <?php endforeach; ?>
+                </div>
+                <p><strong>Lieu:</strong> <?php echo $event['lieu']; ?></p>
+                <p><strong>Catégorie:</strong> <?php echo $event['categorie']; ?></p>
+                <p><strong>Date:</strong> <?php echo $event['date_event']; ?></p>
+                <p><strong>Durée: </strong><?php echo $event['duree']; ?></p>
+                <p><strong>Description: </strong><?php echo $event['description']; ?></p>
+                <p><strong>Participants:</strong> <?php echo $event['nbr_participants_actuels']; ?> participants</p>
+
+                <?php if (!$est_connecte): ?>
+                    <a href="login.php">participer</a>
+                <?php else: ?>
+                    <form action="formulaireparticipation.php" method="GET">
+                        <input type="hidden" name="id" value="<?php echo $event['id']; ?>">
+                        <input type="hidden" name="photos" value="<?php echo $event['photos'][0]; ?>">
+                        <input type="hidden" name="name" value="<?php echo $event['name']; ?>">
+                        <input type="hidden" name="description" value="<?php echo $event['description']; ?>">
+                        <input type="hidden" name="organisateur_id" value="<?php echo $event['organisateur_id']; ?>">
+                        <input type="hidden" name="nbr_participants_actuels" value="<?php echo $event['nbr_participants_actuels']; ?>">
+                        <input type="hidden" name="lieu" value="<?php echo $event['lieu']; ?>">
+                        <input type="hidden" name="categorie" value="<?php echo $event['categorie']; ?>">
+                        <input type="hidden" name="date_event" value="<?php echo $event['date_event']; ?>">
+                        <input type="hidden" name="duree" value="<?php echo $event['duree']; ?>">
+
+                        <button type="submit" id="prt" >Participer</button>
+                    </form>
+                <?php endif; ?>
             </div>
-            <p><?php echo $event['description']; ?></p>
-            <p><strong>Lieu:</strong> <?php echo $event['lieu']; ?>, Ville: <?php echo $event['ville']; ?></p>
-            <p><strong>Catégorie:</strong> <?php echo $event['categorie']; ?></p>
-            <p><strong>Date:</strong> <?php echo $event['date_debut']; ?> - <?php echo $event['date_fin']; ?></p>
-            <p><strong>Heure: </strong><?php echo $event['heure_debut']; ?> - <?php echo $event['heure_fin']; ?></p>
-            <p><strong>Participants:</strong> <?php echo $event['nbr_participants_actuels']; ?> participants</p>
-            <button onclick="window.location.href='http://localhost/tpweb/login.php'">Participer</button>
-
-
-            </div>
-            <?php endforeach; ?>
-        </div>
-
-
-
-    
+        <?php endforeach; ?>
+    </div>
 
     <div class="pagination">
         <?php if ($page > 1): ?>
-            <a href="?page=<?php echo $page - 1; ?>">Précédent</a>
+            <a href="javascript:void(0);" onclick="changePage(<?php echo $page - 1; ?>)">Précédent</a>
         <?php endif; ?>
 
         <span>Page <?php echo $page; ?> sur <?php echo $total_pages; ?></span>
 
         <?php if ($page < $total_pages): ?>
-            <a href="?page=<?php echo $page + 1; ?>">Suivant</a>
+            <a href="javascript:void(0);" onclick="changePage(<?php echo $page + 1; ?>)">Suivant</a>
         <?php endif; ?>
     </div>
 </div>
 
 <script>
-    document.querySelectorAll('.photo-container').forEach(function(container) {
-        let images = container.querySelectorAll('img');
-        let currentIndex = 0;
+    function toggleMenu() {
+        const menu = document.getElementById("profiledeco");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
 
-        setInterval(function() {
-            images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex + 1) % images.length;
-            images[currentIndex].classList.add('active');
-        }, 3000);  // Changer d'image toutes les 3 secondes
-    });
+    function changePage(page) {
+        window.location.href = "?page=" + page;
+    }
+
+    function changePage1(page1) {
+        window.location.href = "?page1=" + page1;
+    }
 </script>
 
 </body>
