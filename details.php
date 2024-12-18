@@ -100,6 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="banned.php"><i class="fa fa-ban"></i> Utilisateurs Bannis</a></li>
             <li><a href="request.php"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
             <li><a href="message.php"><i class="fa fa-message"></i> Messages</a></li>
+            <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
+
         </ul>
     </nav>
 </aside>

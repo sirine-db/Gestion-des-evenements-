@@ -248,7 +248,7 @@ header nav ul li img {
                     <h3>Événement : <?= htmlspecialchars($row['event_name']) ?></h3>
                     <p>Description : <?= htmlspecialchars($row['event_description']) ?></p>
                     <p>État de la participation : <strong><?= htmlspecialchars($row['participation_status']) ?></strong></p>
-                    <form action="delete_event.php" method="POST" style="display:inline;">
+                    <form action="delete_event.php" method="POST" style="display:inline;"onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ?');">
                         <input type="hidden" name="event_id" value="<?= $row['event_id'] ?>">
                         <button type="submit" class="delete-btn">Supprimer</button>
                     </form>

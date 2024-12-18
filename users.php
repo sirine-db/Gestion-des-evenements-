@@ -45,12 +45,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = 'User banned successfully';
         } else {
             $message = 'Failed to ban user';
+                }
+        }elseif ($action === 'make_admin' && $id > 0) {
+            // Make user an admin
+            $stmt = $conn->prepare("UPDATE users SET role = 'admin' WHERE id = ?");
+            $stmt->bind_param('i', $id);
+            if ($stmt->execute()) {
+                $message = 'User role updated to Admin';
+            } else {
+                $message = 'Failed to update user role';
+            }
+        } elseif ($action === 'make_organizer' && $id > 0) {
+            // Make user an organizer
+            $stmt = $conn->prepare("UPDATE users SET role = 'organiser' WHERE id = ?");
+            $stmt->bind_param('i', $id);
+            if ($stmt->execute()) {
+                $message = 'User role updated to Organizer';
+            } else {
+                $message = 'Failed to update user role';
+            }
+        } else {
+            $message = 'Invalid action or ID';
         }
-    } else {
-        $message = 'Invalid action or ID';
     }
-}
-
 // Close the connection
 $conn->close();
 ?>
@@ -70,6 +87,7 @@ $conn->close();
                 <li><a href="banned.php"><i class="fa fa-ban"></i> Utilisateurs Bannis</a></li>
                 <li><a href="request.php"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
                 <li><a href="message.php"><i class="fa fa-message"></i> Messages</a></li>
+                <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
             </ul>
         </nav>
     </aside><!DOCTYPE html>
@@ -100,6 +118,8 @@ $conn->close();
                         <button type="submit" name="action" value="search" id="search">SEARCH</button>
                         <button type="submit" name="action" value="delete" id="delete">DELETE</button>
                         <button type="submit" name="action" value="ban" id="ban">BAN</button>
+                        <button type="submit" name="action" value="make_admin" id="make_admin">Make Admin</button>
+                        <button type="submit" name="action" value="make_organizer" id="make_organizer">Make Organizer</button>
                     </div>
                 </form>
 

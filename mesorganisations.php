@@ -3,67 +3,66 @@ session_start();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['email'])) {
-    // Rediriger vers la page de connexion si non connecté
     header("Location: connexion.php");
     exit();
-}else{
-// Récupérer l'ID de l'utilisateur depuis la session
-$user_id = $_SESSION['id'];
 }
+
+// Récupérer l'ID de l'utilisateur depuis la session
+if (!isset($_SESSION['id'])) {
+    die("Erreur : L'ID utilisateur n'est pas défini dans la session.");
+}
+$user_id = intval($_SESSION['id']); // Assurer que l'ID est un entier
 
 // Connexion à la base de données
 $servername = "localhost";
 $username = "root";
 $password = "pswd";
 $dbname = "dz_events";
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Vérifier la connexion
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// Vérifier si l'ID utilisateur est disponible
-if (!isset($_SESSION['id'])) {
-    die("Erreur : L'ID utilisateur n'est pas défini dans la session.");
+    die("Erreur de connexion : " . $conn->connect_error);
 }
 
+// Initialiser la liste des événements
 $evenements = [];
 
 // Requête pour récupérer les événements où l'utilisateur est l'organisateur
 $sql = "
     SELECT id, name, description, organizer_id, nombre_participant, lieu, date_event, duree, photo_path, status 
     FROM events 
-    WHERE organizer_id = ?"; // Filtrer par l'ID de l'organisateur
+    WHERE organizer_id = ?";
 
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id); // Associer l'ID utilisateur au paramètre
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            // Ajouter les informations de l'événement à la liste
-            $evenements[] = $row;
-        }
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $evenements[] = $row;
     }
+}
 
-    // Requête pour récupérer les demandes d'événements où l'utilisateur est l'organisateur
-    $sql_requests = "
-        SELECT er.event_id, e.name, e.description, e.organizer_id, e.nombre_participant, e.lieu, e.date_event, e.duree, e.photo_path, e.status 
-        FROM event_requests er
-        JOIN events e ON er.event_id = e.id
-        WHERE er.user_id = ?"; // Filtrer par l'ID de l'utilisateur
+// Requête pour récupérer les demandes d'événements où l'utilisateur est l'organisateur
+$sql_requests = "
+    SELECT er.id AS event_request_id, er.name, er.description, er.organizer_id, 
+           er.nombre_participant, er.lieu, er.date_event, er.duree, er.photo_path, er.status
+    FROM event_requests er
+    WHERE er.organizer_id = ?";
 
-    $stmt_requests = $conn->prepare($sql_requests);
-    $stmt_requests->bind_param("i", $user_id);
-    $stmt_requests->execute();
-    $result_requests = $stmt_requests->get_result();
+$stmt_requests = $conn->prepare($sql_requests);
+$stmt_requests->bind_param("i", $user_id);
+$stmt_requests->execute();
+$result_requests = $stmt_requests->get_result();
 
-    if ($result_requests->num_rows > 0) {
-        while ($row = $result_requests->fetch_assoc()) {
-            $evenements[] = $row; // Ajouter les demandes à la liste des événements
-        }
+if ($result_requests->num_rows > 0) {
+    while ($row = $result_requests->fetch_assoc()) {
+        $evenements[] = $row;
     }
+}
 
 $stmt->close();
 $conn->close();
@@ -203,28 +202,28 @@ $conn->close();
     </header>
 
     <div class="event-container">
-        <h2>Liste des Événements</h2>
+        <h2>Mes Événements</h2>
         <?php if (!empty($evenements)): ?>
             <?php foreach ($evenements as $event): ?>
                 <div class="event">
-                    <h3><?= htmlspecialchars($event['nom']); ?></h3>
+                    <h3><?= htmlspecialchars($event['name']); ?></h3>
                     <p class="date">Date: <?= htmlspecialchars($event['date_event']); ?></p>
                     <p class="duration">Durée: <?= htmlspecialchars($event['duree']); ?></p>
                     <p class="location">Lieu: <?= htmlspecialchars($event['lieu']); ?></p>
-                    <p class="status">Statut: <?= htmlspecialchars($event['statut']); ?></p>
+                    <p class="status">Statut: <?= htmlspecialchars($event['status']); ?></p>
                     <p class="description"><?= htmlspecialchars($event['description']); ?></p>
-
-                    <?php if (!empty($event['photo'])): ?>
+                    <?php if (!empty($event['photo_path'])): ?>
                         <div class="photos">
-                            <img src="<?= htmlspecialchars($event['photo']); ?>" alt="Photo de l'événement">
+                            <img src="<?= htmlspecialchars($event['photo_path']); ?>" alt="Photo de l'événement">
                         </div>
                     <?php endif; ?>
 
-                    <!-- Formulaire de suppression -->
-                    <form action="delete_org.php" method="POST" style="display: inline;">
-                        <input type="hidden" name="event_id" value="<?= htmlspecialchars($event['id']); ?>">
-                        <button type="submit" name="delete_event" class="delete-btn">Supprimer</button>
+                    <!-- Formulaire de suppression sécurisé -->
+                    <form action="delete_org.php" method="POST" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                    <input type="hidden" name="event_id" value="<?= isset($event['id']) ? htmlspecialchars($event['id']) : ''; ?>">
+                    <button type="submit" name="delete_event" class="delete-btn">Supprimer</button>
                     </form>
+
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

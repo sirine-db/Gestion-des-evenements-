@@ -134,6 +134,8 @@ if (isset($_POST['update'])) {
             <li><a href="banned.php" id="banned-tab"><i class="fa fa-ban"></i> Utilisateurs Bannis</a></li>
             <li><a href="request.php" id="requests-tab"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
             <li><a href="message.php" id="message-tab"><i class="fa fa-message"></i> Messages</a></li>
+            <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
+
         </ul>
     </nav>
 </aside>
