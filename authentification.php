@@ -78,7 +78,7 @@ foreach ($utilisateurs_valides as $utilisateur) {
                 exit();
             }
         } elseif ($utilisateur['role'] === 'admin') {
-            header("Location: admin_dashboard.php");
+            header("Location: menu.php");
             exit();
         }
     }
