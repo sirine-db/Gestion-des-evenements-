@@ -8,7 +8,9 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+// Initialize variables
 
+$event_participation =[];
 $message = '';  
 $participation = null;  
 
@@ -29,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'accept' && $id > 0) {
         // Accept participation request
-        $stmt = $conn->prepare("UPDATE event_participation SET participation_status = 'accepted' WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE event_participation SET participation_status = 'accepte' WHERE id = ?");
         $stmt->bind_param('i', $id);
         if ($stmt->execute()) {
             $message = 'Participation request accepted';
@@ -49,6 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'Invalid action or ID';
     }
 }
+
+// Retrieve all participation requests from the database
+$stmt = $conn->prepare("SELECT * FROM event_participation");
+$stmt->execute();
+$result = $stmt->get_result();
+$event_participation = $result->fetch_all(MYSQLI_ASSOC);
 
 $conn->close();
 ?>
@@ -78,6 +86,8 @@ $conn->close();
                 <li><a href="request.php"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
                 <li><a href="message.php"><i class="fa fa-message"></i> Messages</a></li>
                 <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
+                <li><a href="deconnexion.php"><i class="fa fa-sign-out-alt"></i> Déconnexion</a></li>
+
             </ul>
         </nav>
     </aside>
@@ -107,8 +117,46 @@ $conn->close();
                     <p><strong>Motivation:</strong> <?= htmlspecialchars($participation['motivation']) ?></p>
                     <p><strong>Expectations:</strong> <?= htmlspecialchars($participation['attentes']) ?></p>
                     <p><strong>Status:</strong> <?= htmlspecialchars($participation['participation_status']) ?></p>
+                    <p><strong>Statut social:</strong> <?= htmlspecialchars($participation['statut']) ?></p>
+                    <p><strong>rajout qlq chose:</strong> <?= htmlspecialchars($participation['rajout']) ?></p>
+                    <p><strong>Time:</strong> <?= htmlspecialchars($participation['created_at']) ?></p>
                 <?php endif; ?>
             </div>
+
+            <div id="participation_req">
+                <h2>All request</h2>
+                <?php if (count($event_participation) > 0): ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID:</th>
+                                <th>Event ID:</th>
+                                <th>Expectations:</th>
+                                <th>Status:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($event_participation as $user): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($user['id']) ?></td>
+                                    <td><?= htmlspecialchars($user['user_id']) ?></td>
+                                    <td><?= htmlspecialchars($user['event_id']) ?></td>
+                                    <td><?= htmlspecialchars($user['attentes']) ?></td>
+                                    <td><?= htmlspecialchars($user['participation_status']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No request found.</p>
+                <?php endif; ?>
+            </div>
+
+
+
+
+
         </div>
     </section>
 </main>

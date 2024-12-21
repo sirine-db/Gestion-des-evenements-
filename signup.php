@@ -165,8 +165,8 @@ if (isset($_SESSION['email'])) {
         <nav>
             <ul class="nav-1">
                 <li><a href="http://localhost/tp-web/pageacceil.php#hero" >Accueil</a></li>
-                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
                 <li><a href="http://localhost/tp-web/pageacceil.php#about" >Àpropos</a></li>
+                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
             </ul>
             <ul class="nav-2">
                 <li>  <a href="http://localhost/tp-web/login.php">login</a></li>

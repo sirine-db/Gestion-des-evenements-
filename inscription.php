@@ -78,6 +78,9 @@ $preference=0;
 
 // Exécuter la requête
 if ($stmt->execute()) {
+    // Récupérer l'ID auto-incrémenté de la dernière insertion
+    $id = $conn->insert_id;
+
     echo "Insertion réussie dans la table users.";
 } else {
     echo "Erreur lors de l'insertion : " . $stmt->error;

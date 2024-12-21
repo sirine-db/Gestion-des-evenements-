@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Exécuter la requête
     if ($stmt->execute()) {
         echo "<p>Demande d'organisation soumise avec succès. Vous serez redirigé vers la page d'accueil.</p>";
-        header("refresh:3;url=bienvenue.php"); // Redirection après 3 secondes
+        header("refresh:3;url=bienvenue.php"); 
         exit();
     } else {
         echo "Erreur lors de la soumission : " . $stmt->error;

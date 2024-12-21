@@ -92,7 +92,7 @@ $resultats = array_filter($evenements, function($event) use ($search_term, $cate
     $preferences = isset($_SESSION['preferencelist']) ? $_SESSION['preferencelist'] : [];
 
     // Filtrage des noms ou lieux
-    $match_nom = empty($search_term) || stripos($event['nom'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
+    $match_nom = empty($search_term) || stripos($event['name'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
 
     // Filtrage par catégorie : priorité au filtre du formulaire, sinon préférences
     $match_categorie = empty($categorie_filter)
@@ -107,7 +107,7 @@ $resultats = array_filter($evenements, function($event) use ($search_term, $cate
 });
 // Filtrer les événements en fonction de la recherche
 $resultats1 = array_filter($evenements, function($event) use ($search_term, $categorie_filter, $lieu_filter) {
-    $match_nom = empty($search_term) || stripos($event['nom'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
+    $match_nom = empty($search_term) || stripos($event['name'], $search_term) !== false || stripos($event['lieu'], $search_term) !== false;
     $match_categorie = empty($categorie_filter) || $event['categorie'] == $categorie_filter;
     $match_lieu = empty($lieu_filter) || $event['lieu'] == $lieu_filter;
 
@@ -557,7 +557,7 @@ body {   margin: 0;
                 <input type="hidden" name="date_event" value="<?php echo $event['date_event']; ?>">    
                 <input type="hidden" name="duree" value="<?php echo $event['duree']; ?>">
                 <input type="hidden" name="categorie" value="<?php echo $event['categorie']; ?>">
-                    <button type="submit">Participer</button>
+                <button type="submit">Participer</button>
                 </form>
                 </div>
             <?php endforeach; ?>

@@ -63,6 +63,8 @@ body {
     padding: 20px;
     margin-left: 20px;
     margin-top: 0;
+    width: calc(100% - 250px); 
+
 }
 
 .main-content header {
@@ -80,7 +82,7 @@ body {
 
 
 #dashboard-content {
-    background-color: #45828D;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -101,7 +103,7 @@ body {
 #buttons label {
     font-size: 18px;
     font-weight: bold;
-    color: white;
+    color: #45828D;
 }
 
 #buttons input {
@@ -133,6 +135,12 @@ body {
 /* Custom button colors */
 #search {
     background-color: #0e7360;
+    color: white; 
+
+}
+
+#accept:hover,#reject:hover, #search:hover {
+    background-color: #06411b;
 }
 
 #accept {
@@ -144,7 +152,7 @@ body {
 }
 
 #requests {
-    background-color: #45828D;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 15px;
     display: flex;
@@ -165,7 +173,7 @@ body {
 }
 
 #request-info p {
-    color: rgb(254, 254, 254); 
+    color: white;
     font-weight: bold;
 }
 
@@ -175,4 +183,44 @@ body {
 
 .sidebar .logo i {
     font-size: 5rem;
+}
+
+#participation_req {
+    margin-top: 20px;
+}
+
+#participation_req table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#participation_req table th,
+#participation_req table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#participation_req table th {
+    background-color: #45828D;
+    color: white;
+}
+
+#participation_req table td {
+    background-color: #f4f4f9;
+}
+
+#participation_req button {
+    background-color: #0e7360; 
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#participation_req button:hover {
+    background-color: #06411b;
 }

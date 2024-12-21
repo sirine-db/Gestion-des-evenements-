@@ -44,7 +44,9 @@ $conn->close();
                 <li><a href="banned.php"><i class="fa fa-ban"></i> Utilisateurs Bannis</a></li>
                 <li><a href="request.php"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
                 <li><a href="message.php"><i class="fa fa-message"></i> Messages</a></li>
+                <li><a href="deconnexion.php"><i class="fa fa-sign-out-alt"></i> Déconnexion</a></li>
             </ul>
+            
         </nav>
     </aside>
 

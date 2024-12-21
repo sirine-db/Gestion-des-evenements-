@@ -294,7 +294,7 @@ $total_pages1 = ceil(count($resultats) / $events_per_page1);
         }
     }
         /* Style pour le bouton de recherche */
-        .search-bar button,#prt {
+        .search-bar button {
             padding: 10px 20px;
             background: linear-gradient(90deg, #00f6ff, #ff007c); /* Dégradé coloré */
             color: #ffffff;
@@ -306,12 +306,12 @@ $total_pages1 = ceil(count($resultats) / $events_per_page1);
         }
 
      
-        .search-bar button ,#prt:hover {
+        .search-bar button :hover {
             background: linear-gradient(90deg, #ff007c, #00f6ff);
             transform: translateY(-3px);
         }
 
-        .event button, #prt{
+        .event button {
             width: 100%;
             padding: 12px;
             background: linear-gradient(90deg, #008fbf, #c7005f);
@@ -324,7 +324,7 @@ $total_pages1 = ceil(count($resultats) / $events_per_page1);
             margin-top: auto;
         }
 
-        .event button:hover {
+        .event button:hover  {
             background: linear-gradient(90deg, #c7005f, #008fbf);
             transform: translateY(-3px);
         }
@@ -374,32 +374,17 @@ $total_pages1 = ceil(count($resultats) / $events_per_page1);
                         <img src="<?php echo $photo; ?>" class="<?php echo ($key == 0) ? 'active' : ''; ?>" />
                     <?php endforeach; ?>
                 </div>
+                
                 <p><strong>Lieu:</strong> <?php echo $event['lieu']; ?></p>
                 <p><strong>Catégorie:</strong> <?php echo $event['categorie']; ?></p>
                 <p><strong>Date:</strong> <?php echo $event['date_event']; ?></p>
                 <p><strong>Durée: </strong><?php echo $event['duree']; ?></p>
                 <p><strong>Description: </strong><?php echo $event['description']; ?></p>
                 <p><strong>Participants:</strong> <?php echo $event['nbr_participants_actuels']; ?> participants</p>
-
-                <?php if (!$est_connecte): ?>
-                    <a href="login.php">participer</a>
-                <?php else: ?>
-                    <form action="formulaireparticipation.php" method="GET">
-                        <input type="hidden" name="id" value="<?php echo $event['id']; ?>">
-                        <input type="hidden" name="photos" value="<?php echo $event['photos'][0]; ?>">
-                        <input type="hidden" name="name" value="<?php echo $event['name']; ?>">
-                        <input type="hidden" name="description" value="<?php echo $event['description']; ?>">
-                        <input type="hidden" name="organisateur_id" value="<?php echo $event['organisateur_id']; ?>">
-                        <input type="hidden" name="nbr_participants_actuels" value="<?php echo $event['nbr_participants_actuels']; ?>">
-                        <input type="hidden" name="lieu" value="<?php echo $event['lieu']; ?>">
-                        <input type="hidden" name="categorie" value="<?php echo $event['categorie']; ?>">
-                        <input type="hidden" name="date_event" value="<?php echo $event['date_event']; ?>">
-                        <input type="hidden" name="duree" value="<?php echo $event['duree']; ?>">
-
-                        <button type="submit" id="prt" >Participer</button>
-                    </form>
-                <?php endif; ?>
-            </div>
+                <form action="login.php">
+                <button type="submit" >Participer</button>
+                </form>
+                </div>
         <?php endforeach; ?>
     </div>
 

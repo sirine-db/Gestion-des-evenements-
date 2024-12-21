@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="request.php"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
             <li><a href="message.php"><i class="fa fa-message"></i> Messages</a></li>
             <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
-
+            <li><a href="deconnexion.php"><i class="fa fa-sign-out-alt"></i> Déconnexion</a></li>
         </ul>
     </nav>
 </aside>

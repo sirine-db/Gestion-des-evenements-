@@ -1,12 +1,16 @@
 <?php
-session_start();
-// Vérifier si l'utilisateur est connecté
+// Vérification de la session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Rediriger les utilisateurs connectés
 if (isset($_SESSION['email'])) {
-    // Rediriger vers la page de connexion si non connecté
     header("Location: bienvenue.php");
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -139,23 +143,41 @@ if (isset($_SESSION['email'])) {
     </style>
 </head>
 <body>
-<header id="header">
+    <header id="header">
         <nav>
             <ul class="nav-1">
-                <li><a href="http://localhost/tp-web/pageacceil.php#hero" >Accueil</a></li>
-                <li><a href="http://localhost/tp-web/event.php">evenements</a></li>
-                <li><a href="http://localhost/tp-web/pageacceil.php#about" >Àpropos</a></li>
-                <li><a href="http://localhost/tp-web/pageacceil.php#contact">Contact</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#hero">Accueil</a></li>
+                <li><a href="http://localhost/tp-web/pageacceil.php#about">À propos</a></li>
+                <li><a href="http://localhost/tp-web/event.php">Événements</a></li>
             </ul>
             <ul class="nav-2">
-                <li> <a href="http://localhost/tp-web/signup.php" >sign-up</a></li>
+                <li><a href="http://localhost/tp-web/signup.php">Sign-up</a></li>
             </ul>
-        
         </nav>
     </header>
+    
     <div class="form-container">
         <h2>Connexion</h2>
         <a href="http://localhost/tp-web/signup.php">Pas encore inscrit ? Créez un compte</a>
+
+        <!-- Affichage des messages d'erreur -->
+        <?php if (isset($_GET['error'])): ?>
+            <div class="error-message">
+                <?php 
+                    if ($_GET['error'] === 'banned') {
+                        echo "Votre compte est banni.";
+                        echo " Vous ne pouvez pas vous connecter.";
+                        echo "Veuillez contacter l'administrateur pour plus d'informations.";
+                    } elseif ($_GET['error'] === 'invalid_credentials') {
+                        echo "Identifiants incorrects. Veuillez réessayer.";
+                    } elseif ($_GET['error'] === 'missing_fields') {
+                        echo "Veuillez remplir tous les champs.";
+                    }
+                ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Formulaire -->
         <form action="http://localhost/tp-web/authentification.php" method="POST">
             <label for="login">Email :</label>
             <input type="text" id="login" name="login" placeholder="exemple@mail.com" required>

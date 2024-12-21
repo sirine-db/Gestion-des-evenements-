@@ -220,7 +220,7 @@ $conn->close();
 
                     <!-- Formulaire de suppression sécurisé -->
                     <form action="delete_org.php" method="POST" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
-                    <input type="hidden" name="event_id" value="<?= isset($event['id']) ? htmlspecialchars($event['id']) : ''; ?>">
+                    <input type="hidden" name="event_id" value="<?= isset($event['event_request_id']) ? htmlspecialchars($event['event_request_id']) : ''; ?>">
                     <button type="submit" name="delete_event" class="delete-btn">Supprimer</button>
                     </form>
 

@@ -135,6 +135,7 @@ if (isset($_POST['update'])) {
             <li><a href="request.php" id="requests-tab"><i class="fa fa-envelope"></i> Demandes d'Événements</a></li>
             <li><a href="message.php" id="message-tab"><i class="fa fa-message"></i> Messages</a></li>
             <li><a href="participation_requests.php"><i class="fa fa-handshake"></i> Demandes Participations</a></li>
+            <li><a href="deconnexion.php"><i class="fa fa-sign-out-alt"></i> Déconnexion</a></li>
 
         </ul>
     </nav>
@@ -184,9 +185,8 @@ if (isset($_POST['update'])) {
             <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])): ?>
                 <p>Event not found!</p>
             <?php endif; ?>
-        </div>
+            </div>
     </section>
 </main>
-
 </body>
 </html>

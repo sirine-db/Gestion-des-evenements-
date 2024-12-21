@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'])) {
     // Préparer la requête de suppression
     $sql = "DELETE FROM event_participation WHERE event_id = ? AND user_id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $event_id, $_SESSION['id']);
+    $stmt->bind_param("ii", $event_id, // Vérifier la connexion
+);
     
     if ($stmt->execute()) {
         // Rediriger vers la page des participations avec un message de succès

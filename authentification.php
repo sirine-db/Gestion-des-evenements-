@@ -45,11 +45,18 @@ if (!$login || !$password) {
     exit();
 }
 
+
 // Vérification des identifiants
 foreach ($utilisateurs_valides as $utilisateur) {
     if (($login === $utilisateur['adresse_mail'] || $login === $utilisateur['username']) &&
         password_verify($password, $utilisateur['password'])) {
 
+             // Vérification du statut "bannis"
+        if ($utilisateur['statut'] === 'bannis') {
+            
+            header("Location: login.php?error=banned");
+            exit();
+        }
         // Démarrer la session
         session_start();
 
